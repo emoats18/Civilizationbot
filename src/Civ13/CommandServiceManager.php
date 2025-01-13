@@ -62,12 +62,15 @@ class CommandServiceManager
     */
     private function afterConstruct(): void
     {
-        $this->discord->once('init', function() {
+        $fn = function() {
             $this->logger->info('Setting up CommandServiceManager...');
             $this->setup();
             if ($application_commands = $this->discord->__get('application_commands'))
                 $this->logger->debug('[APPLICATION COMMAND LIST] ' . PHP_EOL . '`' . implode('`, `', array_map(fn($command) => $command->getName(), $application_commands)) . '`');
-        });
+        };
+        $this->civ13->ready
+            ? $fn()
+            : $this->discord->once('init', fn() => $fn());
     }
     /**
      * Sets up the bot by updating commands, guild commands, and declaring listeners.

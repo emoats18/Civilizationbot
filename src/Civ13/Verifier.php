@@ -174,7 +174,7 @@ class Verifier
                 );
             });
         });
-        $this->civ13->discord->once('init', function () {
+        $fn = function () {
             $this->verified = $this->getVerified();
             $this->logger->info('[Provisional Array]', $this->provisional->toArray());
             foreach ($this->provisional as $item) $this->provisionalRegistration($item['ss13'], $item['discord']); // Attempt to register all provisional user 
@@ -184,7 +184,10 @@ class Verifier
                         $this->joinRoles($member);
             $this->verifierStatusTimer();
             $this->setup();
-        });
+        };
+        $this->civ13->ready
+            ? $fn()
+            : $this->discord->once('init', fn() => $fn());
     }
     public function setup()
     {

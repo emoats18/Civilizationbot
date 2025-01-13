@@ -47,17 +47,19 @@ class Slash
     private function afterConstruct(): void
     {
         $this->__declareListeners();
-        $this->discord->once('init', function() {
+        $fn = function() {
             $this->logger->info('Setting up Interaction commands...');
             $this->setup();
             if ($application_commands = $this->discord->__get('application_commands'))
                 if ($names = array_map(fn($command) => $command->getName(), $application_commands))
                     $this->logger->debug(sprintf('[APPLICATION COMMAND LIST] `%s`', implode('`, `', $names)));
-        });
+        };
+        $this->civ13->ready
+            ? $fn()
+            : $this->discord->once('init', fn() => $fn());
     }
     /**
      * Sets up the bot by updating commands, guild commands, and declaring listeners.
-     * This method should be called in the scope of $this->discord->once('init', fn() => $this->setup());
      */
     private function setup(): PromiseInterface
     {

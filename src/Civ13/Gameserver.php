@@ -179,7 +179,7 @@ class GameServer
         $this->setup();
 
         if (! $this->enabled) return; // Don't start timers for disabled servers
-        $this->discord->once('init', function () {
+        $fn = function () {
             $this->logger->info("Getting player count for Gameserver {$this->name}");
             $this->__updateDiscordVariables();
             $this->localServerPlayerCount(); // Populates $this->players
@@ -187,7 +187,10 @@ class GameServer
             $this->serverinfoTimer(); // Hard check playercount and  ckeys to scrutinizeCkey() every 3 minutes
             $this->relayTimer(); // File chat relay
             // $this->currentRoundEmbedTimer(); // The bot has to see a round id first
-        });
+        };
+        $this->civ13->ready
+            ? $fn()
+            : $this->discord->once('init', fn() => $fn());
     }
     /**
      * This method is responsible for setting up the game server by performing the following tasks:

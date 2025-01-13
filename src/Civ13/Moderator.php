@@ -75,7 +75,9 @@ class Moderator
     }
     private function afterConstruct(): void
     {
-        $this->discord->once('init', fn() => $this->setup());
+        $this->civ13->ready
+            ? $this->setup()
+            : $this->discord->once('init', fn() => $this->setup());
     }
     public function setup(): PromiseInterface
     {

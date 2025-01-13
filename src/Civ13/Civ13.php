@@ -334,36 +334,20 @@ class Civ13
         $this->byond = new Byond();
         $this->httpServiceManager = new HttpServiceManager($this);
         $this->messageServiceManager = new MessageServiceManager($this);
-        if (isset($this->discord)) $this->discord->once('init', function () {
+        $fn = function () {
             $this->ready = true;
             $this->logger->info("Logged in as {$this->discord->username} {$this->discord->user}");
-            /*$this->discord->users->fetch($this->discord->id)->then(function ($user) {
-                $this->logger->info('User:' . json_encode($user));
-            });*/
             $this->logger->info('------');
             //$this->commandServiceManager = new CommandServiceManager($this->discord, $this->httpServiceManager, $this->messageServiceManager, $this);
             $this->__UpdateDiscordVariables();
-            //else $this->logger->debug('No ready functions found!');
             $this->loop->addTimer(5, fn() => $this->slash = new Slash($this));
             $this->declareListeners();
             $this->bancheckTimer(); // Start the unban timer and remove the role from anyone who has been unbanned
             foreach ($this->functions['init'] as $func) $func($this);
-            //$this->discord->emojis->freshen()->then(fn() => $this->logger->info('Emojis fetched: ' . json_encode($this->discord->emojis)));
-            //if ($guild = $this->discord->guilds->get('id', $this->civ13_guild_id)) $guild->emojis->freshen()->then(fn() => $this->logger->info('Guild Emojis fetched: ' . json_encode($guild->emojis)));
-            //$this->discord->sounds->freshen();
-            //if ($guild = $this->discord->guilds->get('id', $this->civ13_guild_id)) $guild->sounds->freshen();
-            //$this->logger->info('.....');
-
-            //$this->logger->info(json_encode(array_keys($this->discord->guilds->toArray())));
-            //$this->discord->requestSoundboardSounds(array_keys($this->discord->guilds->toArray()));
-
-            //$this->discord->skus->freshen()->then(fn(SKUsRepository $skus) => $this->logger->info('SKUs fetched: ' . json_encode($skus)));
-            //if (! isset($this->discord->entitlements)) {
-                //$this->logger->info('Entitlements Not Set');
-                //$this->logger->info('Entitlements Set: ' . json_encode($this->discord->entitlements));
-            //}
-            //$this->discord->skus->freshen()->then(fn(SKUsRepository $skus) => $this->logger->info('SKUs fetched: ' . json_encode($skus)));
-        });
+        };
+        $this->ready
+            ? $fn()
+            : $this->discord->on('ready', $fn);
     }
     /**
      * Resolves the given options array by validating and setting default values for each option.
