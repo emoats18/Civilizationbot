@@ -660,11 +660,7 @@ class Civ13
             "<@{$this->discord->id}>",
             "<@!{$this->discord->id}>",
             $this->command_symbol
-        ] as $string) {
-            if (str_starts_with($content, $string)) return $string;
-            else $this->logger->debug("Command prefix `$string` was not found at the start of message content: $content");
-        }
-        return null;
+        ] as $string) return str_starts_with($content, $string) ? $string : null;
     }
 
     /**
@@ -678,7 +674,6 @@ class Civ13
         if (! $message->guild || $message->guild->owner_id !== $this->owner_id) return ['message_content' => '', 'message_content_lower' => '', 'called' => false]; // Only process commands from a guild that Taislin owns
         
         $call = $this->getCommandPrefix($message->content);
-        $this->logger->debug("Command prefix: `$call`");
         $message_content = $call ? trim(substr($message->content, strlen($call))) : $message->content;
 
         return [
