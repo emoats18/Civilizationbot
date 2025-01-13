@@ -678,6 +678,7 @@ class Civ13
         if (! $message->guild || $message->guild->owner_id !== $this->owner_id) return ['message_content' => '', 'message_content_lower' => '', 'called' => false]; // Only process commands from a guild that Taislin owns
         
         $call = $this->getCommandPrefix($message->content);
+        $this->logger->debug("Command prefix: `$call`");
         $message_content = $call ? trim(substr($message->content, strlen($call))) : $message->content;
 
         return [
