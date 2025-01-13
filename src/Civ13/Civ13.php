@@ -103,7 +103,7 @@ enum CPUUsage: string
 
 class Civ13
 {
-    const maps = '/code/__defines/maps.dm'; // Found in the cloned git repo, (e.g. '/home/civ13/civ13-git/code/__defines/maps.dm')
+    const maps = '/code/__defines/maps.dm'; // Found in the cloned git repo, (e.g. '/home/emoney/civ13/civ13-git/code/__defines/maps.dm')
 
     const log_basedir = '/data/logs';
     const playernotes_basedir = '/data/player_saves';

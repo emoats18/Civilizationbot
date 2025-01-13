@@ -157,10 +157,10 @@ $options = array(
     'ooc_badwords' => $ooc_badwords,
     'ic_badwords' => $ic_badwords,
     'folders' => array(
-        // 'typespess_path' => '/home/civ13/civ13-typespess',
+        // 'typespess_path' => '/home/emoney/civ13/civ13-typespess',
     ),
     'files' => array( // Server-specific file paths MUST start with the server name as defined in server_settings unless otherwise specified
-        // 'typespess_launch_server_path' => '/home/civ13/civ13-typespess/scripts/launch_server.sh',
+        // 'typespess_launch_server_path' => '/home/emoney/civ13/civ13-typespess/scripts/launch_server.sh',
     ),
     'channel_ids' => array(
         'get-approved' => '1328179627885072438', #get-approved
@@ -214,8 +214,8 @@ foreach (['а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к'
 
 // Write editable configurations to a single JSON file
 
-//$json = json_encode($options, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-//file_put_contents("config.json", $json);
+$json = json_encode($options, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+file_put_contents("config.json", $json);
 
 
 // Load configurations from the JSON file
@@ -241,7 +241,7 @@ $server_settings = [ // Server specific settings, listed in the order in which t
         'legacy' => true,
         'moderate' => true,
         'legacy_relay' => false,
-        'basedir' => '/home/emoney/civ13/civ13-server',
+        'basedir' => '/home/emoney/civ13/civ13',
         // Primary channels
         'playercount' => '1328179627885072446',
         'discussion' => '1328179628480663654',

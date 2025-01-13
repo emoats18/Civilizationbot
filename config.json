@@ -722,10 +722,10 @@
     ],
     "folders": [],
     "files": {
-        "map_defines_path": "/home/civ13/civ13-git/code/__defines/maps.dm",
-        "tdm_sportsteams": "/home/civ13/civ13-tdm/SQL/sports_teams.txt",
-        "tdm_awards_path": "/home/civ13/civ13-tdm/SQL/awards.txt",
-        "tdm_awards_br_path": "/home/civ13/civ13-tdm/SQL/awards_br.txt"
+        "map_defines_path": "/home/emoney/civ13/civ13-git/code/__defines/maps.dm",
+        "tdm_sportsteams": "/home/emoney/civ13/civ13/SQL/sports_teams.txt",
+        "tdm_awards_path": "/home/emoney/civ13/civ13/SQL/awards.txt",
+        "tdm_awards_br_path": "/home/emoney/civ13/civ13/SQL/awards_br.txt"
     },
     "channel_ids": {
         "get-approved": "690025163634376738",
