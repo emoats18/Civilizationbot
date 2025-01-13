@@ -67,10 +67,10 @@ class OSFunctions
             1 => ['pipe', 'w'],
             2 => ['pipe', 'w']
         ];
-        if (! $proc = proc_open($output = "sudo nohup $cmd > /dev/null &", $descriptorspec, $pipes)) return reject(new MissingSystemPermissionException('proc_open() failed'));
+        if (! $proc = proc_open($cmd, $descriptorspec, $pipes)) return reject(new MissingSystemPermissionException('proc_open() failed')); // old method was "sudo nohup $cmd > /dev/null &"
         if (! $proc_details = proc_get_status($proc)) return reject(new MissingSystemPermissionException('proc_get_status() failed'));
         if (! isset($proc_details['pid']) || ! $pid = $proc_details['pid']) return reject(new MissingSystemPermissionException('proc_get_status() did not return a PID'));
-        error_log("Executing external shell command `$output` with PID $pid");
+        error_log("Executing external shell command `$cmd` with PID $pid");
         return resolve($proc);
     }
 
