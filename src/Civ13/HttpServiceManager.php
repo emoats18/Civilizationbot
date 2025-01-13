@@ -364,6 +364,12 @@ class HttpServiceManager
                     if (isset($this->civ13->channel_ids['staff_bot']) && $channel = $this->discord->getChannel($this->civ13->channel_ids['staff_bot'])) $this->civ13->sendMessage($channel, $message)->then(fn() => $this->civ13->restart());
                     return HttpResponse::plaintext($message);
                 }, true)
+            ->offsetSet('/updateadmins',
+                fn(ServerRequestInterface $request, string $endpoint, bool $whitelisted): HttpResponse =>
+                    $this->civ13->adminlistUpdate()
+                        ? HttpResponse::plaintext("Admin lists updated")->withStatus(HttpResponse::STATUS_OK)
+                        : HttpResponse::plaintext("Unable to update admin lists")->withStatus(HttpResponse::STATUS_OK),
+                true)
             ->offsetSet('/bancheck_centcom',
                 function (ServerRequestInterface $request, string $endpoint, bool $whitelisted) use (&$gameserver): HttpResponse
                 {

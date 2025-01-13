@@ -704,6 +704,12 @@ class MessageServiceManager
                         ? $this->civ13->reply($message, implode(', ', $playerlist))
                         : $message->react("❌"),
                 ['Chief Technical Officer'])
+            ->offsetSet('updateadmins',
+                fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
+                    ($this->civ13->adminlistUpdate())
+                        ? $message->react("👍")
+                        : $message->react("🔥"),
+                ['Ambassador'])
             ->offsetSet('pullrepo',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                     (is_dir($fp = $this->civ13->gitdir) && OSFunctions::execInBackground("git -C {$fp} pull"))
