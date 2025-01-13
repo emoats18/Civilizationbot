@@ -662,7 +662,7 @@ class Civ13
             $this->command_symbol
         ] as $string) {
             if (str_starts_with($content, $string)) return $string;
-            $this->logger->debug("Command prefix `$string` was not found at the start of message content: $content");
+            else $this->logger->debug("Command prefix `$string` was not found at the start of message content: $content");
         }
         return null;
     }
