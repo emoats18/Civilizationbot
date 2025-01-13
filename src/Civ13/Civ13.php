@@ -334,7 +334,7 @@ class Civ13
         $this->byond = new Byond();
         $this->httpServiceManager = new HttpServiceManager($this);
         $this->messageServiceManager = new MessageServiceManager($this);
-        $fn = function () {
+        $this->discord->on('init', function () {
             $this->ready = true;
             $this->logger->info("Logged in as {$this->discord->username} {$this->discord->user}");
             $this->logger->info('------');
@@ -344,10 +344,7 @@ class Civ13
             $this->declareListeners();
             $this->bancheckTimer(); // Start the unban timer and remove the role from anyone who has been unbanned
             foreach ($this->functions['init'] as $func) $func($this);
-        };
-        $this->ready
-            ? $fn()
-            : $this->discord->on('ready', $fn);
+        });
     }
     /**
      * Resolves the given options array by validating and setting default values for each option.
