@@ -940,7 +940,7 @@ class MessageServiceManager
      */
     private function __generateServerMessageCommands(): void
     {
-        if (isset($this->civ13->enabled_gameservers['tdm'], $this->civ13->enabled_gameservers['tdm']->basedir) && file_exists($fp = $this->civ13->enabled_gameservers['tdm']->basedir . Civ13::awards))
+        if (isset($this->civ13->enabled_gameservers['eternal'], $this->civ13->enabled_gameservers['eternal']->basedir) && file_exists($fp = $this->civ13->enabled_gameservers['eternal']->basedir . Civ13::awards))
             $this->messageHandler->offsetSet('medals',
                 function (Message $message, string $command, array $message_filtered) use ($fp): PromiseInterface
                 {
@@ -976,7 +976,7 @@ class MessageServiceManager
                     if (! $msg = $medals($ckey)) return $this->civ13->reply($message, 'There was an error trying to get your medals!');
                     return $this->civ13->reply($message, $msg, 'medals.txt');
                 }, ['Verified']);
-        if (isset($this->civ13->enabled_gameservers['tdm'], $this->civ13->enabled_gameservers['tdm']->basedir) && file_exists($fp = $this->civ13->enabled_gameservers['tdm']->basedir . Civ13::awards_br))
+        if (isset($this->civ13->enabled_gameservers['eternal'], $this->civ13->enabled_gameservers['eternal']->basedir) && file_exists($fp = $this->civ13->enabled_gameservers['eternal']->basedir . Civ13::awards_br))
             $this->messageHandler->offsetSet('brmedals',
                 function (Message $message, string $command, array $message_filtered) use ($fp): PromiseInterface
                 {

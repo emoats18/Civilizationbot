@@ -1271,7 +1271,7 @@ class GameServer
      */
     public function sportsteam(): PromiseInterface
     {
-        if (! file_exists($fp = $this->civ13->enabled_gameservers['tdm']->basedir . Civ13::sportsteams)) {
+        if (! file_exists($fp = $this->civ13->enabled_gameservers['eternal']->basedir . Civ13::sportsteams)) {
             $this->logger->warning($err = "Unable to find `$fp`");
             return reject(new FileNotFoundException($err));
         }
