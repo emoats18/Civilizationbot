@@ -1187,7 +1187,7 @@ class Civ13
         }
         $this->logger->debug('Running periodic bancheck...');
         array_walk($this->enabled_gameservers, fn($gameserver) => $gameserver->cleanupLogs());
-        if (isset($this->role_ids['Banished']) && $guild = $this->discord->guilds->get('id', $this->civ13_guild_id)) foreach ($guild->members as $member) {
+        if (isset($this->verifier, $this->role_ids['Banished']) && $guild = $this->discord->guilds->get('id', $this->civ13_guild_id)) foreach ($guild->members as $member) {
             if (! $item = $this->verifier->getVerifiedMemberItems()->get('discord', $member->id)) continue;
             if (! isset($item['ss13'])) continue;
             //$this->logger->debug("Checking bans for {$item['ss13']}...");
