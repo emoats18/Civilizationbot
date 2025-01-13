@@ -595,14 +595,17 @@ class MessageServiceManager
                 function (Message $message, string $command, array $message_filtered): PromiseInterface 
                 {
                     if (! $guild = $this->civ13->discord->guilds->get('id', $this->civ13->civ13_guild_id)) return $message->react("🔥");
-                    if (! $members = $guild->members->filter(function (Member $member) {
+                    if ($unverified_members = $guild->members->filter(function (Member $member) {
                         return ! $member->roles->has($this->civ13->role_ids['Verified'])
                             && ! $member->roles->has($this->civ13->role_ids['Banished'])
                             && ! $member->roles->has($this->civ13->role_ids['Permabanished']);
-                    })) return $message->react("👎");
-                    foreach ($members as $member) if ($this->civ13->verifier->getVerifiedItem($member)) $member->addRole($this->civ13->role_ids['Verified'], 'fixroles');
+                    })) foreach ($unverified_members as $member) if ($this->civ13->verifier->getVerifiedItem($member)) $member->addRole($this->civ13->role_ids['Verified'], 'fixroles');
+                    if (
+                        $verified_members = $guild->members->filter(fn (Member $member) => $member->roles->has($this->civ13->role_ids['Verified']))
+                    ) foreach ($verified_members as $member) if (! $this->civ13->verifier->getVerifiedItem($member)) $member->removeRole($this->civ13->role_ids['Verified'], 'fixroles');
                     return $message->react("👍");
                 }, ['Ambassador'])
+            
             ->offsetSet('panic_bunker',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                     $this->civ13->reply($message, 'Panic bunker is now ' . (($this->civ13->panic_bunker = ! $this->civ13->panic_bunker) ? 'enabled.' : 'disabled.')),
