@@ -216,46 +216,10 @@ foreach (['а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к'
 }
 */
 
-/*$exact_netspeak = [ // Words that are not necessarily bad, but are used in a way that is disruptive to the server
-    'omg',
-    'brb',
-    'g2g',
-    'lol',
-    'rofl',
-    'lmao',
-    'lmfao',
-    'kek',
-    'tldr',
-    'idk',
-
-    'skibidi',
-    'gyatt',
-    'rizz',
-    'ligma',
-    'rekt',
-    'cope and seethe',
-    'sussy',
-    'sigma',
-    'gooning',
-    'pog',
-    'poggers',
-    'cringe',
-    'uwu'
-];
-
-foreach ($exact_netspeak as $word) $options['ic_badwords'][] = [
-    'word' => $word,
-    'duration' => '1 week',
-    'reason' => "You must speak with the proper lingo/vocabulary of the current epoch and setting you're playing.",
-    'category' => 'netspeak',
-    'method' => 'exact',
-    'warnings' => 3
-];*/
-
 // Write editable configurations to a single JSON file
 
-$json = json_encode($options, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-file_put_contents("config.json", $json);
+//$json = json_encode($options, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+//file_put_contents("config.json", $json);
 
 
 // Load configurations from the JSON file
@@ -272,7 +236,7 @@ $server_settings = [ // Server specific settings, listed in the order in which t
         'supported' => true,
         'enabled' => true,
         'name' => 'TDM',
-        //'key' => 'tdm', // This must match the top-level key in the server_settings array
+        //'key' => 'tdm',
         'ip' => $civ13_ip,
         'port' => '1714',
         'host' => 'Taislin',
@@ -281,24 +245,24 @@ $server_settings = [ // Server specific settings, listed in the order in which t
         'legacy' => true,
         'moderate' => true,
         'legacy_relay' => false,
-        'basedir' => '/home/civ13/civ13-tdm', // Base directory of the server
+        'basedir' => '/home/civ13/civ13-tdm',
         // Primary channels
-        'discussion' => '799952134426591273', // #tdm
-        'playercount' => '1048777462898761789', // tdm-#
+        'discussion' => '799952134426591273',
+        'playercount' => '1048777462898761789',
         // Chat relay channels
-        'ooc' => '1107016184328622233', // #ooc-tdm
-        'lobby' => '1107021760483831988', // #lobby-tdm
-        'asay' => '1107016769169801216', // #asay-tdm
-        'ic' => '1121531682198138920', // #ic-tdm
+        'ooc' => '1107016184328622233',
+        'lobby' => '1107021760483831988',
+        'asay' => '1107016769169801216',
+        'ic' => '1121531682198138920',
         // Log channels
-        'transit' => '1107020747622326313', // #transit-tdm
-        'adminlog' => '1107024305927225455', // #adminlog-tdm
-        'debug' => '1106248157798600715', // #debug-tdm (debugging)
-        'garbage' => '1107018726307528735', // #garbage-tdm
-        'runtime' => '1107017103883632792', // #runtime-tdm
-        'attack' => '1107017830160936980', // #attack-tdm
+        'transit' => '1107020747622326313',
+        'adminlog' => '1107024305927225455',
+        'debug' => '1106248157798600715',
+        'garbage' => '1107018726307528735',
+        'runtime' => '1107017103883632792',
+        'attack' => '1107017830160936980',
     ],
-    'nomads' => [
+    'nomads' => [ // This is the endpoint you'll add to config.txt, (e.g. WEBHOOK_ADDRESS http://127.0.0.1:55555/webhook/nomads)
         'supported' => true, // Whether the server is supported by the remote webserver
         'enabled' => true, // Whether the server should have commands handled by the bot
         'name' => 'Nomads', // Name of the server and the prefix of the playercount channel (e.g. nomads-999)
@@ -307,7 +271,7 @@ $server_settings = [ // Server specific settings, listed in the order in which t
         'port' => '1715', // Port of the server
         'host' => 'Taislin', // Host of the server
         'panic_bunker' => true, // Panic mode will ban all users who are not verified
-        'log_attacks' => true,
+        'log_attacks' => true, // Only recommended to set to false to mitigate logging spam
         'legacy' => true, // Legacy mode will use the file system instead of an SQL database
         'moderate' => true, // Whether chat moderation is enabled
         'legacy_relay' => false, // How messages are relayed to the server
@@ -332,7 +296,7 @@ $server_settings = [ // Server specific settings, listed in the order in which t
         'supported' => true,
         'enabled' => false,
         'name' => 'Persistence',
-        //'key' => 'pers', // This must match the top-level key in the server_settings array
+        //'key' => 'pers',
         'ip' => $vzg_ip,
         'port' => '1716',
         'host' => 'ValZarGaming',
@@ -341,22 +305,22 @@ $server_settings = [ // Server specific settings, listed in the order in which t
         'legacy' => true,
         'moderate' => true,
         'legacy_relay' => false,
-        'basedir' => '/home/valithor/VPS/civ13-rp', // Base directory of the server
+        'basedir' => '/home/valithor/VPS/civ13-rp',
         // Primary channels
-        'discussion' => '799951945346711552', // #pers
-        'playercount' => '1090788345082298369', // pers-#
+        'discussion' => '799951945346711552',
+        'playercount' => '1090788345082298369',
         // Chat relay channels
-        'ooc' => '1139614228408455388', // #ooc-pers
-        'lobby' => '1139614248222343282', // #lobby-pers
-        'asay' => '1139614266299785278', // #asay-pers
-        'ic' => '1139614281512529941', // #ic-pers
+        'ooc' => '1139614228408455388',
+        'lobby' => '1139614248222343282',
+        'asay' => '1139614266299785278',
+        'ic' => '1139614281512529941',
         // Log channels
-        'transit' => '1139614542700216420', // #transit-pers
-        'adminlog' => '1139614564577722448', // #adminlog-pers
-        'debug' => '1139614582931984575', // #debug-pers (debugging)
-        'garbage' => '1139614596789964820', // #garbage-pers
-        'runtime' => '1139614629081915492', // #runtime-pers
-        'attack' => '1139614643954921593', // #attack-pers
+        'transit' => '1139614542700216420',
+        'adminlog' => '1139614564577722448',
+        'debug' => '1139614582931984575',
+        'garbage' => '1139614596789964820',
+        'runtime' => '1139614629081915492',
+        'attack' => '1139614643954921593',
     ],
 ];
 foreach ($server_settings as $key => $value) $server_settings[$key]['key'] = $key; // Key is intended to be a shortname for the full server, so defining both a full name and short key are required. Individual server settings will also get passed around and lose their primary key, so we need to reassign it.

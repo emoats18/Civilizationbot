@@ -1119,7 +1119,7 @@ class MessageServiceManager
                         if (! isset($split_message[1])) return $message->react("❌")->then(fn () => $this->civ13->reply($message, 'You need to include the name of the map.'));
                         return $gameserver->MapSwap($split_message[1], (isset($this->civ13->verifier)) ? ($this->civ13->verifier->getVerifiedItem($message->author)['ss13'] ?? $this->civ13->discord->username) : $this->civ13->discord->username)->then(
                             fn ($result) => $message->react("👍")->then(fn() => $this->civ13->reply($message, $result)),
-                            fn (\Throwable $error) => $message->react(($error instanceof FileNotFoundException) ? "🔥" : "👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
+                            fn (\Throwable $error) => $message->react($error instanceof FileNotFoundException ? "🔥" : "👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
                         );
                     }, ['Ambassador'])
                 ->offsetSet("{$gameserver->key}sportsteam",
