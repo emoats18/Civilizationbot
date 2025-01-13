@@ -656,9 +656,11 @@ class Civ13
 
     private function getCommandPrefix(string $content): ?string
     {
-        if (str_starts_with($content, $this->command_symbol)) return $this->command_symbol;
-        if (str_starts_with($content, "<@!{$this->discord->id}>")) return "<@!{$this->discord->id}>";
-        if (str_starts_with($content, "<@{$this->discord->id}>")) return "<@{$this->discord->id}>";
+        foreach ([
+            $this->command_symbol,
+            "<@!{$this->discord->id}>",
+            "<@{$this->discord->id}>"
+        ] as $string) if (str_starts_with($content, $string)) return $string;
         return null;
     }
 

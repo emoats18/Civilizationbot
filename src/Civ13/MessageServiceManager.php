@@ -49,7 +49,7 @@ class MessageServiceManager
     {
         $message_array = $this->civ13->filterMessage($message);
         if (! $message_array['called']) {
-            $this->logger->debug('Message received but bot not invoked, ignoring...');
+            $this->logger->debug("Message received but bot not invoked: `{$message->content}`");
             return null; // Not a command
         }
         if ($return = $this->messageHandler->handle($message)) return $return;
