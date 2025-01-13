@@ -1418,7 +1418,7 @@ class GameServer
         if (! is_resource($socket = @fsockopen('localhost', intval($this->port), $errno, $errstr, 1))) return $embed->addFieldValues($this->name, 'Offline');
         fclose($socket);
         $data = self::explodeServerdata($data);
-        if (isset($data[1])) $embed->addFieldValues($this->name, '<'.$data[1].'>');
+        if (isset($data[0])) $embed->addFieldValues($this->name, '<'.$data[0].'>');
         $embed->addFieldValues('Host', $this->host, true);
         if (isset($data[7])) $embed->addFieldValues('Round Time', $this->parseRoundTime($data[7]), true);
         if (isset($data[8])) $embed->addFieldValues('Map', $data[8], true); // Appears twice in the data
