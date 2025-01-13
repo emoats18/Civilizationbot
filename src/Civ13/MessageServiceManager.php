@@ -625,9 +625,7 @@ class MessageServiceManager
                             return \React\Promise\all($members);
                         })
                         ->then(function ($members) {
-                            usort($members, function ($a, $b) {
-                                return $b->joined_at->getTimestamp() - $a->joined_at->getTimestamp();
-                            });
+                            usort($members, fn($a, $b) => $b->joined_at->getTimestamp() - $a->joined_at->getTimestamp());
                             $promises = array_map(function (Member $member) {
                                 return new \React\Promise\Promise(function ($resolve) use ($member) {
                                     $resolve([
