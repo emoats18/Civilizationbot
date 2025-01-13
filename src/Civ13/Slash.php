@@ -212,13 +212,13 @@ class Slash
                 ]
             ]));
 
-            // if ($command = $commands->get('name', 'unverify')) $commands->delete($command);
-            if (! $commands->get('name', 'unverify')) $this->save($commands, new Command($this->discord, [
+            if ($command = $commands->get('name', 'unverify')) $commands->delete($command);
+            /*if (! $commands->get('name', 'unverify')) $this->save($commands, new Command($this->discord, [
                 'type'                       => Command::USER,
                 'name'                       => 'unverify',
                 'dm_permission'              => false,
                 'default_member_permissions' => (string) new RolePermission($this->discord, ['administrator' => true]),
-            ]));
+            ]));*/
 
             // if ($command = $commands->get('name', 'ban')) $commands->delete($command);
             if (! $commands->get('name', 'ban')) $this->save($commands, new Command($this->discord, [

@@ -786,14 +786,14 @@ class MessageServiceManager
                         fn(\Throwable $error) => $message->react(($error instanceof \InvalidArgumentException) ? "❌" : "👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
                     );
                 }, ['Chief Technical Officer'])
-            ->offsetSet('unverify',
+            /*->offsetSet('unverify',
                 function (Message $message, string $command, array $message_filtered): PromiseInterface
                 { // This function is only authorized to be used by the database administrator
                     if ($message->user_id != $this->civ13->technician_id) return $message->react("❌");
                     if (! $split_message = explode(';', trim(substr($message_filtered['message_content_lower'], strlen($command))))) return $this->civ13->reply($message, 'Invalid format! Please use the format `register <byond username>; <discord id>`.');
                     if (! $id = Civ13::sanitizeInput($split_message[0])) return $this->civ13->reply($message, 'Please use the format `register <byond username>; <discord id>`.');
                     return $this->civ13->reply($message, $this->civ13->verifier->unverify($id)['message']);
-                }, ['Chief Technical Officer'])   
+                }, ['Chief Technical Officer'])*/
             ->offsetSet('dumpappcommands',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                     $message->reply('Application commands: `' . implode('`, `', array_map(fn($command) => $command->getName(), $this->civ13->discord->__get('application_commands'))) . '`'),
