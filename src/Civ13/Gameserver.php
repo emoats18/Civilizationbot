@@ -1108,7 +1108,7 @@ class GameServer
             ];
             $ban_reason = array_reduce(array_keys($conditions), fn($carry, $key) => $carry ?: ($conditions[$key] ? $key : null), null);
             if ($ban_reason && isset($this->civ13->channel_ids['staff_bot']) && $channel = $this->discord->getChannel($this->civ13->channel_ids['staff_bot'])) {
-                return $this->civ13->sendMessage($channel, $this->civ13->ban(['ckey' => $ckey, 'duration' => '999 years', 'reason' => "Account under investigation. Appeal at {$this->civ13->discord_formatted}"], null, null, true) . " ($ban_reason)");
+                return $this->civ13->sendMessage($channel, $this->civ13->ban(['ckey' => $ckey, 'duration' => '2 minutes', 'reason' => "You cannot use a VPN or VPS hosting provider to play. Please disable it before reconnecting."], null, null, true) . " ($ban_reason)");
             }
         }
         return resolve(null);
