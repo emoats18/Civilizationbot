@@ -186,7 +186,7 @@ class GameServer
             $this->playercountTimer(); // Update playercount channel every 10 minutes
             $this->serverinfoTimer(); // Hard check playercount and  ckeys to scrutinizeCkey() every 3 minutes
             $this->relayTimer(); // File chat relay
-            // $this->currentRoundEmbedTimer(); // The bot has to see a round id first
+            $this->currentRoundEmbedTimer(); // The bot has to see a round id first
         };
         $this->civ13->ready
             ? $fn()
@@ -506,7 +506,6 @@ class GameServer
             $results = $this->civ13->FileNav($this->basedir . Civ13::log_basedir, $tokens);
             if (! $results[0]) return $interaction->sendFollowUpMessage(MessageBuilder::new()->setContent('No logs found.'), true);
             return $interaction->sendFollowUpMessage(MessageBuilder::new()->addFile($results[1], 'log.txt'), true);
-            
         };
         if ($log = str_replace('/', ';', "logs {$this->key}{$round['log']}")) $builder->addComponent(
             ActionRow::new()->addComponent(
