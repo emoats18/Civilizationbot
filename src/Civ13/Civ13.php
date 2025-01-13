@@ -588,7 +588,10 @@ class Civ13
      */
     private function __loadOrInitializeVariables(): void
     {
-        if (! $tests = $this->VarLoad('tests.json')) $tests = [];
+        if (! $tests = $this->VarLoad('tests.json')) {
+            $tests = [];
+            $this->VarSave('tests.json', $tests);
+        }
         $this->tests = $tests;
         if (! $paroled = $this->VarLoad('paroled.json')) {
             $paroled = [];

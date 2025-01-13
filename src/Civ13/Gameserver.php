@@ -152,8 +152,14 @@ class GameServer
         $this->runtime = $options['runtime'];
         $this->attack = $options['attack'];
         if ($this->enabled) { // Don't load variables from files if the server is disabled
-            $this->rounds = $this->civ13->VarLoad("{$this->key}_rounds.json") ?? [];
-            $current_round = $this->civ13->VarLoad("{$this->key}_current_round.json") ?? [];
+            if (! $this->rounds = $this->civ13->VarLoad("{$this->key}_rounds.json") ?? []) {
+                $this->rounds = [];
+                $this->civ13->VarSave("{$this->key}_rounds.json", $this->rounds);
+            }
+            if (! $current_round = $this->civ13->VarLoad("{$this->key}_current_round.json") ?? []) {
+                $current_round = [];
+                $this->civ13->VarSave("{$this->key}_current_round.json", $current_round);
+            }
             if ($current_round = array_shift($current_round)) {
                 $this->rounds[$this->current_round = $current_round]['interrupted'] = true;
                 $this->civ13->VarSave("{$this->key}_rounds.json", $this->rounds);
