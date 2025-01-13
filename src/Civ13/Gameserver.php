@@ -439,7 +439,7 @@ class GameServer
      * @param MessageBuilder|null $builder The message builder to used to perform the update the message. Defaults to null.
      * @return PromiseInterface<Message> A promise that resolves when the update is complete.
      */
-    private function updateCurrentRoundEmbedMessageBuilder(?MessageBuilder $builder = null): PromiseInterface
+    public function updateCurrentRoundEmbedMessageBuilder(?MessageBuilder $builder = null): PromiseInterface
     {
         if (! $guild = $this->discord->guilds->get('id', $this->civ13->civ13_guild_id)) {
             $this->logger->error($err = "Could not find Guild with ID `{$this->civ13->civ13_guild_id}`");

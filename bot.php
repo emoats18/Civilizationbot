@@ -91,7 +91,7 @@ $filesystem = FilesystemFactory::create($loop);
 include 'variable_functions.php';
 
 // TODO: Add a timer and a callable function to update these IP addresses every 12 hours
-$civ13_ip = gethostbyname('www.moviesfreepremium.xyz');
+$civ13_ip = gethostbyname('www.moviesfreepremium.xyz') ?? '64.20.37.50';
 $vzg_ip = gethostbyname('www.valzargaming.com');
 $val_ip = gethostbyname('www.valgorithms.com');
 $http_whitelist = [$civ13_ip, $vzg_ip, $val_ip, '50.25.53.244'];
