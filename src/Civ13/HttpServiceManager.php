@@ -1171,7 +1171,7 @@ class HttpServiceManager
                         $gameserver->gameChatWebhookRelay($message, $channel_id);
                         return new HttpResponse(HttpResponse::STATUS_OK);
                     }, true)
-                ->offsetSets([$server_endpoint.'roundstatus', $server_endpoint.'status_update'],
+                ->offsetSets([$server_endpoint.'/roundstatus', $server_endpoint.'/status_update'],
                     fn(ServerRequestInterface $request, string $endpoint, bool $whitelisted): HttpResponse => new HttpResponse(HttpResponse::STATUS_OK)
                     , true)
                 /*
