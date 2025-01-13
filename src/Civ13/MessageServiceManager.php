@@ -1121,20 +1121,6 @@ class MessageServiceManager
                     fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                         $message->react("⏱️")->then(fn() => $gameserver->Restart($message)),
                     ['Ambassador'])
-                ->offsetSet("{$gameserver->key}fixembedtimer",
-                    fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
-                        $message->react("⏱️")->then(fn() => $gameserver->currentRoundEmbedTimer($message))->then(
-                            fn() => $message->react("👍"),
-                            fn(\Throwable $error) => $message->react("👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
-                        ),
-                    ['Ambassador'])
-                ->offsetSet("{$gameserver->key}updatecurrentroundembedmessagebuilder",
-                    fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
-                        $message->react("⏱️")->then(fn() => $gameserver->updateCurrentRoundEmbedMessageBuilder())->then(
-                            fn() => $message->react("👍"),
-                            fn(\Throwable $error) => $message->react("👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
-                        ),
-                    ['Ambassador'])
                 ->offsetSet("{$gameserver->key}mapswap",
                     function (Message $message, string $command, array $message_filtered) use (&$gameserver): PromiseInterface
                     {
@@ -1155,7 +1141,21 @@ class MessageServiceManager
                 ->offsetSet("{$gameserver->key}panic",
                     fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                         $this->civ13->reply($message, "Panic bunker is now " . (($gameserver->panic_bunker = ! $gameserver->panic_bunker) ? 'enabled' : 'disabled')),
-                    ['Ambassador']);
+                    ['Ambassador'])
+                ->offsetSet("{$gameserver->key}fixembedtimer",
+                    fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
+                        $message->react("⏱️")->then(fn() => $gameserver->currentRoundEmbedTimer($message))->then(
+                            fn() => $message->react("👍"),
+                            fn(\Throwable $error) => $message->react("👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
+                        ),
+                    ['Owner', 'Chief Technical Officer'])
+                ->offsetSet("{$gameserver->key}updatecurrentroundembedmessagebuilder",
+                    fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
+                        $message->react("⏱️")->then(fn() => $gameserver->updateCurrentRoundEmbedMessageBuilder())->then(
+                            fn() => $message->react("👍"),
+                            fn(\Throwable $error) => $message->react("👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
+                        ),
+                    ['Owner', 'Chief Technical Officer']);
         }
         
         $this->__declareListener();
