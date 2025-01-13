@@ -657,10 +657,13 @@ class Civ13
     private function getCommandPrefix(string $content): ?string
     {
         foreach ([
-            $this->command_symbol,
+            "<@{$this->discord->id}>",
             "<@!{$this->discord->id}>",
-            "<@{$this->discord->id}>"
-        ] as $string) if (str_starts_with($content, $string)) return $string;
+            $this->command_symbol
+        ] as $string) {
+            if (str_starts_with($content, $string)) return $string;
+            $this->logger->debug("Command prefix `$string` was not found at the start of message content: $content");
+        }
         return null;
     }
 
