@@ -143,6 +143,7 @@ class Verifier
         });
         $this->civ13->discord->on('THREAD_CREATE', function (Thread $thread): ?PromiseInterface
         {
+            if ($thread->owner_id === $this->civ13->discord->id) return null;
             if ($thread->members->has($this->civ13->discord->id)) return null;
             if ($thread->guild_id !== $this->civ13->civ13_guild_id) return null;
             if ($thread->parent_id !== $this->civ13->channel_ids['ban_appeals']) return null;
