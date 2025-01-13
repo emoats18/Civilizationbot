@@ -180,7 +180,7 @@ class GameServer
             $this->playercountTimer(); // Update playercount channel every 10 minutes
             $this->serverinfoTimer(); // Hard check playercount and  ckeys to scrutinizeCkey() every 3 minutes
             $this->relayTimer(); // File chat relay
-            $this->currentRoundEmbedTimer();
+            // $this->currentRoundEmbedTimer(); // The bot has to see a round id first
         });
     }
     /**
