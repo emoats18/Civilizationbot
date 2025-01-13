@@ -49,22 +49,6 @@ use function React\Promise\reject;
 use function React\Promise\resolve;
 use function React\Promise\all;
 
-enum CommandPrefix: string
-{
-    case COMMAND_SYMBOL = 'command_symbol';
-    case MENTION_WITH_EXCLAMATION = 'mention_with_exclamation';
-    case MENTION = 'mention';
-    
-    public static function getPrefix(self $prefix, string $discordId, string $commandSymbol): ?string {
-        return match ($prefix) {
-            self::COMMAND_SYMBOL => $commandSymbol,
-            self::MENTION_WITH_EXCLAMATION => "<@!{$discordId}>",
-            self::MENTION => "<@{$discordId}>",
-            default => null,
-        };
-    }
-}
-
 enum CPUUsage: string
 {
     case Windows = 'Windows';
@@ -213,7 +197,7 @@ class Civ13
     );
     public array $server_funcs_uncalled = []; // List of callable functions that are available for use by other functions, but otherwise not called via a message command
     
-    public string $command_symbol = '@Civilizationbot'; // The symbol that the bot will use to identify commands if it is not mentioned
+    public string $command_symbol = '@Eternalbot'; // The symbol that the bot will use to identify commands if it is not mentioned
     public string $owner_id = '196253985072611328'; // Taislin's Discord ID
     public string $technician_id = '116927250145869826'; // Valithor Obsidion's Discord ID
     public string $embed_footer = ''; // Footer for embeds, this is set in the ready event
@@ -670,9 +654,12 @@ class Civ13
             : $this->discord->once('init', $callback);
     }
 
-    private function startsWithCommandPrefix(string $content): ?string
+    private function getCommandPrefix(string $content): ?string
     {
-        return array_reduce(CommandPrefix::cases(), fn($carry, $prefix) => $carry ?? (str_starts_with($content, $call = CommandPrefix::getPrefix($prefix, $this->discord->id, $this->command_symbol)) ? $call : null), null);
+        if (str_starts_with($content, $this->command_symbol)) return $this->command_symbol;
+        if (str_starts_with($content, "<@!{$this->discord->id}>")) return "<@!{$this->discord->id}>";
+        if (str_starts_with($content, "<@{$this->discord->id}>")) return "<@{$this->discord->id}>";
+        return null;
     }
 
     /**
@@ -685,7 +672,7 @@ class Civ13
     {
         if (! $message->guild || $message->guild->owner_id !== $this->owner_id) return ['message_content' => '', 'message_content_lower' => '', 'called' => false]; // Only process commands from a guild that Taislin owns
         
-        $call = $this->startsWithCommandPrefix($message->content);
+        $call = $this->getCommandPrefix($message->content);
         $message_content = $call ? trim(substr($message->content, strlen($call))) : $message->content;
 
         return [
