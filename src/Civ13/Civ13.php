@@ -842,6 +842,27 @@ class Civ13
         if (strlen($content)<=4096) return $channel->sendMessage($builder->addEmbed($this->createEmbed()->setDescription($content)));
         return $channel->sendMessage($builder->addFileFromContent($file_name, $content));
     }
+
+    /**
+     * Starts a forum thread in the specified channel.
+     *
+     * @param Channel|string $channel The channel object or channel ID where the thread will be started.
+     * @param string $title The title of the forum thread.
+     * @param string $message The initial message of the forum thread.
+     * @return PromiseInterface<Thread> A promise that resolves when the thread is successfully started.
+     * @throws PartException If the channel is not found.
+     */
+    public function startForumThread(Channel|string $channel, string $title, string $message): PromiseInterface
+    {
+        if (is_string($channel) && ! $channel = $this->discord->getChannel($channel)) {
+            $this->logger->error($err = "Channel not found for startForumThread");
+            return reject(new PartException($err));
+        }
+        return $channel->startThread([
+            'name' => $title,
+            'message' => $message
+        ]);
+    }
     /**
      * Sends a message as a reply to another message.
      *
