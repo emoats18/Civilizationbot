@@ -1171,7 +1171,7 @@ class Civ13
     private function __bancheckTimer(): void
     {
         if (! isset($this->verifier, $this->timers['bancheck_timer'])) {
-            $this->loop->cancelTimer($this->timers['bancheck_timer']);
+            ! $this->timers['bancheck_timer'] instanceof TimerInterface ?: $this->loop->cancelTimer($this->timers['bancheck_timer']);
             unset($this->timers['bancheck_timer']);
             return;
         }
