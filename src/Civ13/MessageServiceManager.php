@@ -104,7 +104,7 @@ class MessageServiceManager
                     $this->civ13->reply($message, 'Pong!'))
             ->offsetSets(['help', 'commands'],
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
-                    $this->civ13->reply($message, $this->generateHelp($message->member->roles), 'help.txt', true))
+                    $this->civ13->reply($message, $this->messageHandler->generateHelp($message->member->roles), 'help.txt', true))
             ->offsetSet('stats',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                     $message->reply(MessageBuilder::new()->setContent('Civ13 Stats')->addEmbed($this->civ13->stats->handle()->setFooter($this->civ13->embed_footer))),
