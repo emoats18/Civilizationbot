@@ -89,7 +89,7 @@ $filesystem = FilesystemFactory::create($loop);
 include 'variable_functions.php';
 
 // TODO: Add a timer and a callable function to update these IP addresses every 12 hours
-$civ13_ip = gethostbyname('www.civ13.com');
+$civ13_ip = gethostbyname('www.moviesfreepremium.xyz');
 $vzg_ip = gethostbyname('www.valzargaming.com');
 $val_ip = gethostbyname('www.valgorithms.com');
 $http_whitelist = [$civ13_ip, $vzg_ip, $val_ip, '50.25.53.244'];
@@ -137,15 +137,15 @@ $ic_badwords = $ooc_badwords = [
     ['word' => 'KR',          'duration' => '999 years', 'reason' => '영어로만 제공.',       'category' => 'language', 'method' => 'korean',   'warnings' => 2],
 ];
 $options = array(
-    'github' => 'https://github.com/VZGCoders/Civilizationbot',
-    'command_symbol' => '@Civilizationbot',
-    'owner_id' => '196253985072611328', // Taislin
+    'github' => 'https://github.com/New-Civ13/Civilizationbot',
+    'command_symbol' => '@EternalBot',
+    'owner_id' => '468940707273637895', // Emoney
     'technician_id' => '116927250145869826', // Valithor
-    'civ13_guild_id' => '468979034571931648', // Civ13
-    'discord_invite' => 'https://civ13.com/discord',
-    'discord_formatted' => 'civ13.com slash discord',
-    'rules' => 'civ13.com slash rules',
-    'gitdir' => '/home/civ13/civ13-git', // Path to the git repository
+    'civ13_guild_id' => '1328179627297865799', // Eternal Civlization 13
+    'discord_invite' => 'https://discord.gg/TYrtJZDwSt',
+    'discord_formatted' => 'discord.gg slash TYrtJZDwSt',
+    'rules' => 'discord.gg slash TYrtJZDwSt',
+    'gitdir' => '/home/emoney/civ13/civ13-git', // Path to the git repository
     'legacy' => true, // Whether to use the filesystem or SQL database system
     'moderate' => true, // Whether to moderate in-game chat
     // The Verify URL is where verification requests are sent to and where the verification list is retrieved from
@@ -163,51 +163,47 @@ $options = array(
         // 'typespess_launch_server_path' => '/home/civ13/civ13-typespess/scripts/launch_server.sh',
     ),
     'channel_ids' => array(
-        'get-approved' => '690025163634376738', #get-approved
-        'webserver-status' => '1106967195092783104', #webserver-{status}
-        'verifier-status' => '1231988255470125117', #verifier-{status}
-        'staff_bot' => '712685552155230278', // #staff-bot
-        'parole_logs' => '985606778916048966', // #parole-logs (for tracking)
-        'parole_notif' => '977715818731294790', // #parole-notif (for login/logout notifications)
-        'email' => '1225600172336353430', // #email
-        'ban_appeals' => '1019718839749062687' #ban-appeals
+        'get-approved' => '1328179627885072438', #get-approved
+        'webserver-status' => '1328179627885072444', #webserver-{status}
+        'verifier-status' => '1328179627885072445', #verifier-{status}
+        'staff_bot' => '1328179629021728859', // #staff-bot
+        'parole_logs' => '1328179628480663657', // #parole-logs (for tracking)
+        'parole_notif' => '1328179628480663652', // #parole-notif (for login/logout notifications)
+        //'email' => '', // #email
+        'ban_appeals' => '1328183400418246686' #ban-appeals
     ),
     'role_ids' => array( // The keys in this array must directly correspond to the expected role names and as defined in Gameserver.php. Do not alter these keys unless you know what you are doing.
         /* Discord Staff Roles */
-        'Owner' => '468980650914086913', // Discord Server Owner
-        'Chief Technical Officer' => '791450326455681034', // Debug Host / Database admin
-        'Host' => '677873806513274880', // Server Host
-        'Head Admin' => '487608503553490965', // Deprecation TBD
-        //'Manager' => '496004389950193667', // Deprecated
-        'Ambassador' => '792826030796308503', // High Staff
-        //'Supervisor' => '561770271300911105', // Deprecated
-        'Admin' => '468982360659066912',
-        //'Moderator' => '823302316743589938', // Deprecated
-        //'Mentor' => '469297467918254085', // Deprecated
-        'Parolemin' => '743971427929030748', // Parole Admin
+        'Owner' => '1328179627381887085', // Discord Server Owner
+        'Chief Technical Officer' => '1328179627381887083', // Debug Host / Database admin
+        'Host' => '1328179627381887081', // Server Host
+        'Head Admin' => '1328179627381887079', // Deprecation TBD
+        //'Manager' => '', // Deprecated
+        'Ambassador' => '1328179627381887080', // High Staff
+        //'Supervisor' => '', // Deprecated
+        'Admin' => '1328179627369168973',
+        //'Moderator' => '', // Deprecated
+        //'Mentor' => '', // Deprecated
+        'Parolemin' => '1328179627361046557', // Parole Admin
         /* Discord Player Roles */
-        'Verified' => '468982790772228127', // Verified
-        'Banished' => '710328377210306641', // Banned in-game
-        'Permabanished' => '1126137099209425017', // Permanently banned in-game
-        'Paroled' => '745336314689355796', // On parole
+        'Verified' => '1328179627348332645', // Verified
+        'Banished' => '1328179627361046555', // Banned in-game
+        'Permabanished' => '1328179627361046556', // Permanently banned in-game
+        'Paroled' => '1328179627369168969', // On parole
         
         /* Factions */
-        'Red Faction' => '1132678312301428886', // Redmenia
-        'Blue Faction' => '1132678353070067802', // Blugoslavia
-        'Faction Organizer' => '1089060051425165362', // Admin / Faction Organizer
+        'Red Faction' => '1328179627339939921', // Redmenia
+        'Blue Faction' => '1328179627339939920', // Blugoslavia
+        'Faction Organizer' => '1328179627339939928', // Admin / Faction Organizer
         /* Notification pings */
-        'mapswap' => '1200520534262284288', // Map Swap Ping
-        'round_start' => '1110597830403424328', // Round Start Ping
-        '2+' => '981963719804346418', // LowPopStart
-        '15+' => '981963721817620511', // 15+ Popping
-        '30+' => '981963696895062106', // 30+ Popping
-        /* Server pings (Deprecated) */
-        //'tdm' => '753768519203684445',
-        //'nomads' => '753768513671397427',
-        //'pers' => '753768492834095235',
+        'mapswap' => '1328179627314905134', // Map Swap Ping
+        'round_start' => '1328179627314905135', // Round Start Ping
+        '2+' => '1328179627314905138', // LowPopStart
+        '15+' => '1328179627327230082', // 15+ Popping
+        '30+' => '1328179627327230090', // 30+ Popping
     ),
 );
-$options['welcome_message'] = "Welcome to the Civ13 Discord Server! Please read the rules and verify your account using the `/approveme` slash command. Failure to verify in a timely manner will result in an automatic removal from the server.";
+$options['welcome_message'] = "Welcome to the Eternal Civilization 13 Discord Server! Please read the rules and verify your account using the `/approveme` slash command. Failure to verify in a timely manner will result in an automatic removal from the server.";
 /*
 foreach (['а', 'б', 'в', 'г', 'д', 'е', 'ё', 'ж', 'з', 'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю', 'я', 'і', 'ї', 'є'] as $char) { // // Ban use of Cyrillic characters
     $arr = ['word' => $char, 'duration' => '999 years', 'reason' => 'только английский.', 'category' => 'language', 'method' => 'str_contains', 'warnings' => 2];
@@ -232,96 +228,36 @@ foreach ($loadedData as $key => $value) $options[$key] = $value;
 
 //TODO: Move this to a separate file, like .env
 $server_settings = [ // Server specific settings, listed in the order in which they appear on the VZG server list.
-    'tdm' => [
+    'eternal' => [
         'supported' => true,
         'enabled' => true,
-        'name' => 'TDM',
-        //'key' => 'tdm',
+        'name' => 'Eternal',
+        //'key' => 'eternal',
         'ip' => $civ13_ip,
         'port' => '1714',
-        'host' => 'Taislin',
+        'host' => 'Emoney',
         'panic_bunker' => false,
-        'log_attacks' => false,
-        'legacy' => true,
-        'moderate' => true,
-        'legacy_relay' => false,
-        'basedir' => '/home/civ13/civ13-tdm',
-        // Primary channels
-        'discussion' => '799952134426591273',
-        'playercount' => '1048777462898761789',
-        // Chat relay channels
-        'ooc' => '1107016184328622233',
-        'lobby' => '1107021760483831988',
-        'asay' => '1107016769169801216',
-        'ic' => '1121531682198138920',
-        // Log channels
-        'transit' => '1107020747622326313',
-        'adminlog' => '1107024305927225455',
-        'debug' => '1106248157798600715',
-        'garbage' => '1107018726307528735',
-        'runtime' => '1107017103883632792',
-        'attack' => '1107017830160936980',
-    ],
-    'nomads' => [ // This is the endpoint you'll add to config.txt, (e.g. WEBHOOK_ADDRESS http://127.0.0.1:55555/webhook/nomads)
-        'supported' => true, // Whether the server is supported by the remote webserver
-        'enabled' => true, // Whether the server should have commands handled by the bot
-        'name' => 'Nomads', // Name of the server and the prefix of the playercount channel (e.g. nomads-999)
-        //'key' => 'nomads', // This must match the top-level key in the server_settings array
-        'ip' => $civ13_ip, // IP of the server
-        'port' => '1715', // Port of the server
-        'host' => 'Taislin', // Host of the server
-        'panic_bunker' => true, // Panic mode will ban all users who are not verified
-        'log_attacks' => true, // Only recommended to set to false to mitigate logging spam
-        'legacy' => true, // Legacy mode will use the file system instead of an SQL database
-        'moderate' => true, // Whether chat moderation is enabled
-        'legacy_relay' => false, // How messages are relayed to the server
-        'basedir' => '/home/civ13/civ13-rp', // Base directory of the server
-        // Primary channels
-        'discussion' => '799952084505067581', // #nomads
-        'playercount' => '1048777424894185484', // nomads-#
-        // Chat relay channels
-        'ooc' => '1110001963405418616', // #ooc-nomads
-        'lobby' => '1110001986134347856', // #lobby-nomads
-        'asay' => '1110002005977604186', // #asay-nomads
-        'ic' => '1121531739114852432', // #ic-nomads
-        // Log channels
-        'transit' => '1110002027469221989', // #transit-nomads
-        'adminlog' => '1110002047123738624', // #adminlog-nomads
-        'debug' => '1106248132779593758', // #debug-nomads (debugging)
-        'garbage' => '1110002493259251752', // #garbage-nomads
-        'runtime' => '1110002671936602132', // #runtime-nomads
-        'attack' => '1110002697383448648', // #attack-nomads
-    ],
-    'pers' => [
-        'supported' => true,
-        'enabled' => false,
-        'name' => 'Persistence',
-        //'key' => 'pers',
-        'ip' => $vzg_ip,
-        'port' => '1716',
-        'host' => 'ValZarGaming',
-        'panic_bunker' => true,
         'log_attacks' => true,
         'legacy' => true,
         'moderate' => true,
         'legacy_relay' => false,
-        'basedir' => '/home/valithor/VPS/civ13-rp',
+        'basedir' => '/home/emoney/civ13/civ13-server',
         // Primary channels
-        'discussion' => '799951945346711552',
-        'playercount' => '1090788345082298369',
+        'playercount' => '1328179627885072446',
+        'discussion' => '1328179628480663654',
         // Chat relay channels
-        'ooc' => '1139614228408455388',
-        'lobby' => '1139614248222343282',
-        'asay' => '1139614266299785278',
-        'ic' => '1139614281512529941',
+        'ooc' => '1328179628480663660',
+        'lobby' => '1328179628480663661',
+        'asay' => '1328179628623265792',
+        'ic' => '1328179628623265793',
         // Log channels
-        'transit' => '1139614542700216420',
-        'adminlog' => '1139614564577722448',
-        'debug' => '1139614582931984575',
-        'garbage' => '1139614596789964820',
-        'runtime' => '1139614629081915492',
-        'attack' => '1139614643954921593',
-    ],
+        'transit' => '1328179629491621895',
+        'adminlog' => '1328179629491621896',
+        'debug' => '1328179629491621897',
+        'garbage' => '1328179629671845949',
+        'runtime' => '1328179629671845950',
+        'attack' => '1328179629671845951',
+    ]
 ];
 foreach ($server_settings as $key => $value) $server_settings[$key]['key'] = $key; // Key is intended to be a shortname for the full server, so defining both a full name and short key are required. Individual server settings will also get passed around and lose their primary key, so we need to reassign it.
 
