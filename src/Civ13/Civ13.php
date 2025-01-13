@@ -688,7 +688,7 @@ class Civ13
      * @param string $input The input string to be sanitized.
      * @return string The sanitized input string.
      */
-    public static function sanitizeInput(string $input): string
+    public static function sanitizeInput(string $input = ''): string
     {
         return trim(str_replace(['<@!', '<@&', '<@', '>', '.', '_', '-', '+', ' '], '', strtolower($input)));
     }
