@@ -766,7 +766,7 @@ class Verifier
         if (! ($id = match (true) {
             $input instanceof Member, $input instanceof User => $input->id,
             is_string($input) => is_numeric($input = Civ13::sanitizeInput($input)) ? $input : ($this->get('ss13', $input)['discord'] ?? null),
-            is_array($input) => isset($input['discord']) && is_numeric($discord_id = Civ13::sanitizeInput($input['discord'] ?? '')) ? $discord_id : ($this->get('ss13', Civ13::sanitizeInput($input['ss13'] ?? ''))['discord'] ?? 'null'),
+            is_array($input) => isset($input['discord'], $input['ss13d']) && is_numeric($discord_id = Civ13::sanitizeInput($input['discord'] ?? '')) ? $discord_id : ($this->get('ss13', Civ13::sanitizeInput($input['ss13'] ?? ''))['discord'] ?? 'null'),
             default => null,
         }) || ! $this->isVerified($id)) return null;
         return $guild->members->get('id', $id);
