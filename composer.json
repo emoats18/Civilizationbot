@@ -1,6 +1,6 @@
 {
-    "name": "vzgcoders/civilizationbot",
-    "description": "Civ13's offical Discord bot built in ReactPHP.",
+    "name": "new-civ13/civilizationbot",
+    "description": "Eternal Civilization 13's offical Discord bot built in ReactPHP.",
     "authors": [
         {
             "name": "Valithor Obsidion",

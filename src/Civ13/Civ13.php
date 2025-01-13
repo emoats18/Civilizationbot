@@ -220,7 +220,7 @@ class Civ13
     public string $civ13_guild_id = '468979034571931648'; // Guild ID for the Civ13 server
     public string $civ_token = ''; // Token for use with $verify_url, this is not the same as the bot token and should be kept secret
 
-    public string $github = 'https://github.com/VZGCoders/Civilizationbot'; // Link to the bot's github page
+    public string $github = 'https://github.com/New-Civ13/Civilizationbot'; // Link to the bot's github page
     public string $discord_invite = 'https://civ13.com/discord'; // Link to the Civ13 Discord server
     public string $discord_formatted = 'civ13.com slash discord'; // Formatted for posting in-game (cannot contain html special characters like / or &, blame the current Python implementation)
     public string $rules = 'civ13.com slash rules'; // Link to the server rules
@@ -411,12 +411,12 @@ class Civ13
                 'filesystem' => null,
                 'civ13_guild_id' => '',
                 'civ_token' => '',
-                'command_symbol' => '@Civilizationbot',
+                'command_symbol' => '@EternalBot',
                 'discord' => null,
                 'discord_formatted' => 'civ13.com slash discord',
                 'discord_invite' => 'https://civ13.com/discord',
                 'gitdir' => '',
-                'github' => 'https://github.com/VZGCoders/Civilizationbot',
+                'github' => 'https://github.com/New-Civ13/Civilizationbot',
                 'http_key' => '',
                 'http_port' => 0,
                 'http_whitelist' => [],

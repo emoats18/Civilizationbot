@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Only the [latest version](https://github.com/VZGCoders/Civilizationbot/releases) of CivilizationBot is supported.
+Only the [latest version](https://github.com/New-Civ13/Civilizationbot/releases) of CivilizationBot is supported.
 We generally don't support older versions due to maintenance effort and
 since we aim to provide a fairly stable upgrade path for new versions.
 

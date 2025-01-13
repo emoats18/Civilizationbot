@@ -48,7 +48,10 @@ class MessageServiceManager
     public function handle(Message $message): ?PromiseInterface
     {
         $message_array = $this->civ13->filterMessage($message);
-        if (! $message_array['called']) return null; // Not a command
+        if (! $message_array['called']) {
+            $this->logger->debug('Message received but bot not invoked, ignoring...');
+            return null; // Not a command
+        }
         if ($return = $this->messageHandler->handle($message)) return $return;
         if (! $message_array['message_content_lower']) { // No command given
             $random_responses = ['You can see a full list of commands by using the `help` command.'];

@@ -16,7 +16,7 @@ To install Civilizationbot, follow these steps:
 
 1. Clone the repository:
     ```
-    sh git clone https://github.com/VZGCoders/Civilizationbot.git
+    sh git clone https://github.com/New-Civ13/Civilizationbot.git
     ```
 2. Navigate to the project directory:
     ```sh
