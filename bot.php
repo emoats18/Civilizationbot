@@ -171,7 +171,7 @@ $options = array(
         'staff_bot' => '1328179629021728859', // #staff-bot
         'parole_logs' => '1328179628480663657', // #parole-logs (for tracking)
         'parole_notif' => '1328179628480663652', // #parole-notif (for login/logout notifications)
-        //'email' => '', // #email
+        'email' => '1328234890726080586', // #email
         'ban_appeals' => '1328183400418246686' #ban-appeals
     ),
     'role_ids' => array( // The keys in this array must directly correspond to the expected role names and as defined in Gameserver.php. Do not alter these keys unless you know what you are doing.
