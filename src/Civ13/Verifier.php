@@ -424,6 +424,10 @@ class Verifier
                     if ($channel) $this->civ13->sendMessage($channel, "Verified $member. ($ckey" . ((isset($this->civ13->ages[$ckey])) ? " - {$this->civ13->ages[$ckey]})" : ')'));
                 }
                 break;
+            case 400: //DB rejects processing (likely duplicate entry) or ckey/discord weren't passed properly (highly unlikely)
+                $this->getVerified(false);
+                $error = 'The database rejected the request due to a bad request. This issue is usually temporary and resolves itself immediately with a second attempt.' . PHP_EOL . "If this error persists, contact <@{$this->civ13->technician_id}>.";
+                break;
             case 401:
                 $error = 'I do not currently have the necessary authorization from the website to complete your request. Please try again later.' . PHP_EOL . "If this error persists, contact <@{$this->civ13->technician_id}>.";
                 break;
