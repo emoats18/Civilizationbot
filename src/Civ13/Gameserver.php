@@ -183,7 +183,7 @@ class GameServer
             $this->__updateDiscordVariables();
             $this->localServerPlayerCount(); // Populates $this->players
             $this->playercountTimer(); // Update playercount channel every 10 minutes
-            $this->serverinfoTimer(); // Hard check playercount and  ckeys to scrutinizeCkey() every 3 minutes
+            $this->serverinfoTimer(); // Hard check playercount and ckeys to scrutinizeCkey() every 3 minutes
             $this->relayTimer(); // File chat relay
             $this->currentRoundEmbedTimer(); // The bot has to see a round id first
         };
@@ -393,7 +393,6 @@ class GameServer
     {
         if (! isset($this->timers['serverinfo_timer'])) $this->timers['serverinfo_timer'] = $this->discord->getLoop()->addPeriodicTimer(180, function () {
             if (! /*$playercount =*/ $this->localServerPlayerCount()) return; // No data available
-            //$this->playercountChannelUpdate($playercount); // This needs to be updated to pass $this instead of "{$server}-""
             foreach ($this->players as $ckey) {
                 if (is_null($ckey)) continue;
                 if (isset($this->civ13->moderator)) $this->civ13->moderator->scrutinizeCkey($ckey);
