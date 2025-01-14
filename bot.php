@@ -56,11 +56,11 @@ function loadEnv(string $filePath = __DIR__ . '/.env'): void
 }
 loadEnv(getcwd() . '/.env');
 
-$streamHandler = new StreamHandler('php://stdout', Level::Debug);
+$streamHandler = new StreamHandler('php://stdout', Level::Info);
 $streamHandler->setFormatter(new LineFormatter(null, null, true, true, true));
 $logger = new Logger('Civ13', [$streamHandler]);
 file_put_contents('output.log', ''); // Clear the contents of 'output.log'
-$logger->pushHandler(new StreamHandler('output.log', Level::Debug));
+$logger->pushHandler(new StreamHandler('output.log', Level::Info));
 $logger->info('Loading configurations for the bot...');
 
 $discord = new Discord([
