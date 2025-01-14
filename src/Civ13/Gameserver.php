@@ -116,7 +116,6 @@ class GameServer
     public ?string $current_round_message_id = null;
     /** @var array<array> */
     public array $rounds = [];
-    private int $playercount_ticker = 0;
 
     public string $bancheck_cache = '';
 
@@ -520,11 +519,8 @@ class GameServer
 
     public function playercountTimer(): TimerInterface
     {
-        if (! isset($this->timers['playercount_timer]'])) $this->timers['playercount_timer'] = $this->loop->addPeriodicTimer(60, function () { // Update playercount channel every 10 minutes
-            $this->playercount_ticker++;
-            if ($this->playercount_ticker % 10 !== 0) return false;
-            $this->playercountChannelUpdate(count($this->players));
-        });
+        // Update playercount channel every 10 minutes
+        if (! isset($this->timers['playercount_timer]'])) $this->timers['playercount_timer'] = $this->loop->addPeriodicTimer(600, fn () => $this->playercountChannelUpdate(count($this->players)));
         return $this->timers['playercount_timer'];
     }
 
