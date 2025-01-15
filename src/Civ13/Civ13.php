@@ -823,19 +823,21 @@ class Civ13
      * Sends a message to the specified channel.
      *
      * @param Channel|Thread|string $channel The channel to send the message to. Can be a channel ID or a Channel object.
-     * @param string $content The content of the message.
+     * @param MessageBuilder|string $content The content of the message.
      * @param string $file_name The name of the file to attach to the message. Default is 'message.txt'.
      * @param bool $prevent_mentions Whether to prevent mentions in the message. Default is false.
      * @return PromiseInterface<Message> A PromiseInterface representing the asynchronous operation, or null if the channel is not found.
      * @throws PartException If the channel is not found.
      */
-    public function sendMessage(Channel|Thread|string $channel, string $content, string $file_name = 'message.txt', bool $prevent_mentions = false): PromiseInterface
+    public function sendMessage(Channel|Thread|string $channel, MessageBuilder|string $content, string $file_name = 'message.txt', bool $prevent_mentions = false): PromiseInterface
     {
         // $this->logger->debug("Sending message to {$channel->name} ({$channel->id}): {$message}");
         if (is_string($channel) && ! $channel = $this->discord->getChannel($channel)) {
             $this->logger->error($err = "Channel not found for sendMessage");
             return reject(new PartException($err));
         }
+        if ($content instanceof MessageBuilder) return $channel->sendMessage($content->setAllowedMentions(['parse'=>[]]));
+
         $builder = MessageBuilder::new();
         if ($prevent_mentions) $builder->setAllowedMentions(['parse'=>[]]);
         if (strlen($content)<=2000) return $channel->sendMessage($builder->setContent($content));
