@@ -541,8 +541,12 @@ class Slash
                         fclose($file);
                     }
                 }
-                if (! $found) $response .= "No bans were found for **{$item['ss13']}**." . PHP_EOL;
-                elseif ($member = $this->civ13->verifier->getVerifiedMember($item['ss13']))
+                if (! $found) {
+                    $response .= "No bans were found for **{$item['ss13']}**." . PHP_EOL;
+                    if ($member = $this->civ13->verifier->getVerifiedMember($item['ss13']))
+                        if ($member->roles->has($this->civ13->role_ids['Banished']))
+                            $member->removeRole($this->civ13->role_ids['Banished']);
+                } elseif ($member = $this->civ13->verifier->getVerifiedMember($item['ss13']))
                     if (! $member->roles->has($this->civ13->role_ids['Banished']))
                         $member->addRole($this->civ13->role_ids['Banished']);
                 if (strlen($response)<=2000) return $this->sendFollowUpMessage($interaction, MessageBuilder::new()->setContent($response), true);
