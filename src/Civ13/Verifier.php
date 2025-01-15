@@ -409,7 +409,8 @@ class Verifier
                 $error = "`$ckey` " . ((isset($this->civ13->ages[$ckey])) ? "- ({$this->civ13->ages[$ckey]})" : '') . " has been verified and registered to <@$discord_id>";
                 $this->pending->offsetUnset($discord_id);
                 $this->getVerified(false);
-                if (! $member = $this->civ13->discord->guilds->get('id', $this->civ13->civ13_guild_id)->members->get('id', $discord_id)) return ['success' => false, 'error' => "($ckey - {$this->civ13->ages[$ckey]}) was verified but the member couldn't be found in the server."];
+                if (! isset($this->civ13->ages[$ckey])) $this->civ13->ages[$ckey] = $this->civ13->getByondAge($ckey) ?: null;
+                if (! $member = $this->civ13->discord->guilds->get('id', $this->civ13->civ13_guild_id)->members->get('id', $discord_id)) return ['success' => false, 'error' => "($ckey - " . ($this->civ13->ages[$ckey] ?? 'N/A') . ") was verified but the member couldn't be found in the server."];
                 $channel = isset($this->civ13->channel_ids['staff_bot']) ? $this->civ13->discord->getChannel($this->civ13->channel_ids['staff_bot']) : null;
                 if (isset($this->civ13->panic_bans[$ckey])) {
                     $this->civ13->__panicUnban($ckey);
