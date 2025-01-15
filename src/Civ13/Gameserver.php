@@ -1457,6 +1457,7 @@ class GameServer
         if (! $data) return [];
 
         $data = explode(';', str_replace([
+            '<Server Status: ',
             '<b>Address</b>: ',
             '<b>Map</b>: ',
             '<b>Gamemode</b>: ',
@@ -1468,7 +1469,8 @@ class GameServer
             'ckey_list=',
             'allow_vote_restart=',
             '</b>',
-            '<b>'
+            '<b>',
+            '>'
         ], '', $data));
 
         $return = [];
