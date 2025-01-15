@@ -712,7 +712,7 @@ class GameServer
             if (isset($this->civ13->role_ids['mapswap']) && $role = $this->civ13->role_ids['mapswap']); $msg = "<@&$role>, {$this->name} $msg";
             $channel->sendMessage($msg);
         }
-        $this->loop->addTimer(10, static fn() => OSFunctions::execInBackground("python3 {$this->basedir}" . Civ13::mapswap . " $mapto"));
+        $this->loop->addTimer(10, fn() => OSFunctions::execInBackground("python3 {$this->basedir}" . Civ13::mapswap . " $mapto"));
         return resolve($msg);
     }
 
