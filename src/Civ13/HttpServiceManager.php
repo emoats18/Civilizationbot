@@ -313,7 +313,7 @@ class HttpServiceManager
                     $promise = isset($this->civ13->restart_message) && $this->civ13->restart_message instanceof Message
                         ? $this->civ13->restart_message->edit(MessageBuilder::new()->setContent('Updating code from GitHub... (1/2)'))
                         : $this->civ13->sendMessage($channel, 'Updating code from GitHub... (1/2)');
-                    $promise->then(fn() => OSFunctions::execInBackground('git pull'));
+                    $promise->then(fn(Message $message) => OSFunctions::execInBackground('git pull'));
                     $this->civ13->loop->addTimer(5, fn(): PromiseInterface => $promise
                         ->then(fn(Message $message): PromiseInterface => $message->edit(MessageBuilder::new()->setContent('Forcefully moving the HEAD back to origin/main... (2/2)')))
                         ->then(fn(Message $message) => $this->civ13->restart_message = $message)
