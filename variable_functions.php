@@ -37,7 +37,7 @@ $status_changer_random = function (Civ13 $civ13): PromiseInterface
 };
 $status_changer_timer = function (Civ13 $civ13) use ($status_changer_random): void
 { // on ready
-    if (! isset($civ13->timers['status_changer_timer'])) $civ13->timers['status_changer_timer'] = $civ13->discord->getLoop()->addPeriodicTimer(120, fn() => $status_changer_random($civ13));
+    if (! isset($civ13->timers['status_changer_timer'])) $civ13->timers['status_changer_timer'] = $civ13->discord->getLoop()->addPeriodicTimer(120, static fn() => $status_changer_random($civ13));
 };
 /*$on_ready = function (Civ13 $civ13): void
 {    

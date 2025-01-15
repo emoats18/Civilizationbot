@@ -15,6 +15,7 @@ use Discord\Builders\Components\ActionRow;
 use Discord\Builders\Components\Button;
 use Discord\Builders\MessageBuilder;
 use Discord\Parts\Channel\Message;
+use Discord\Parts\Channel\Poll\Poll;
 use Discord\Parts\Interactions\Interaction;
 use Discord\Parts\User\Member;
 use Monolog\Logger;
@@ -433,8 +434,8 @@ class MessageServiceManager
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                     empty($this->civ13->permitted)
                         ? $this->civ13->reply($message, 'No users have been permitted to bypass the Byond account restrictions.')
-                        : $this->civ13->reply($message, 'The following ckeys are now permitted to bypass the Byond account limit and restrictions: ' . PHP_EOL . '`' . implode('`' . PHP_EOL . '`', array_keys($this->civ13->permitted)) . '`')
-                , ['Admin'], 'exact')
+                        : $this->civ13->reply($message, 'The following ckeys are now permitted to bypass the Byond account limit and restrictions: ' . PHP_EOL . '`' . implode('`' . PHP_EOL . '`', array_keys($this->civ13->permitted)) . '`'),
+                ['Admin'], 'exact')
             ->offsetSet('refresh',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                     $this->civ13->verifier->getVerified(false) ? $message->react("👍") : $message->react("👎"),
@@ -571,6 +572,13 @@ class MessageServiceManager
                             return $this->civ13->reply($message, 'Invalid format! Available commands: `list {test_key}`, `add {test_key} {question}`, `post {test_key} {question #}`, `remove {test_key} {question #}` `delete {test_key}`');
                     }
                 }, ['Ambassador'])
+            ->offsetSet('poll',
+                fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
+                    Polls::getPoll($this->civ13->discord, trim(substr($message_filtered['message_content'], strlen($command))))->then(
+                        static fn(Poll $poll): PromiseInterface => $message->reply(MessageBuilder::new()->setPoll($poll)),
+                        static fn(\Throwable $error): PromiseInterface => $message->react('👎')->then(static fn() => $message->reply($error->getMessage()))
+                    ),
+                ['Admin'])
             ->offsetSet('fullbancheck',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                     array_map(fn($member) => ($item = $this->civ13->verifier->getVerifiedItem($member)) ? $this->civ13->bancheck($item['ss13']) : null, $message->guild->members->toArray())
@@ -736,11 +744,11 @@ class MessageServiceManager
                     $message->react("⏱️");
                     if (! $members_array = $members->toArray()) return $message->react("❌"); // No members to process
                     $promise = array_shift($members_array)->addRole($this->civ13->role_ids['Verified']);
-                    if (! $members_array) return $promise->then(fn() => $message->react("👍")); // There was only one member to process
+                    if (! $members_array) return $promise->then(static fn() => $message->react("👍")); // There was only one member to process
                     $promise = array_reduce($members_array, fn(PromiseInterface $carry_promise, Member $member) =>
                         $carry_promise->then(fn() => $member->addRole($this->civ13->role_ids['Verified'])),
                     $promise);
-                    return $promise->then(fn() => $message->react("👍"));
+                    return $promise->then(static fn() => $message->react("👍"));
                 }, ['Chief Technical Officer'])
             ->offsetSet('retryregister',
                 function (Message $message, string $command, array $message_filtered): PromiseInterface { // This function is only authorized to be used by the database administrator
@@ -783,7 +791,7 @@ class MessageServiceManager
                     $split_message = explode(';', trim(substr($message_filtered['message_content_lower'], strlen($command))));
                     return $this->civ13->verifier->provision($split_message[0] ?? null, $split_message[1] ?? null)->then(
                         fn($result) => $message->react("👍")->then(fn () => $this->civ13->reply($message, $result)),
-                        fn(\Throwable $error) => $message->react(($error instanceof \InvalidArgumentException) ? "❌" : "👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
+                        fn(\Throwable $error): PromiseInterface => $message->react(($error instanceof \InvalidArgumentException) ? "❌" : "👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
                     );
                 }, ['Chief Technical Officer'])
             /*->offsetSet('unverify',
@@ -1109,15 +1117,15 @@ class MessageServiceManager
                     ['Ambassador'])
                 ->offsetSet("{$gameserver->key}host",
                     fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
-                        $message->react("⏱️")->then(fn() => $gameserver->Host($message)),
+                        $message->react("⏱️")->then(static fn() => $gameserver->Host($message)),
                     ['Ambassador'])
                 ->offsetSet("{$gameserver->key}kill",
                     fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
-                        $message->react("⏱️")->then(fn() => $gameserver->Kill($message))
-                    , ['Ambassador'])
+                        $message->react("⏱️")->then(static fn() => $gameserver->Kill($message)),
+                    ['Ambassador'])
                 ->offsetSet("{$gameserver->key}restart",
                     fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
-                        $message->react("⏱️")->then(fn() => $gameserver->Restart($message)),
+                        $message->react("⏱️")->then(static fn() => $gameserver->Restart($message)),
                     ['Ambassador'])
                 ->offsetSet("{$gameserver->key}mapswap",
                     function (Message $message, string $command, array $message_filtered) use (&$gameserver): PromiseInterface
@@ -1133,7 +1141,7 @@ class MessageServiceManager
                     fn(Message $message, string $command, array $message_filtered): PromiseInterface => // I don't know what this is supposed to be used for anymore but the file exists, is empty, and can't be read from.
                         $gameserver->sportsteam()->then(
                             fn($content) => $message->reply(MessageBuilder::new()->setContent('Sports Teams')->addfileFromContent("{$gameserver->key}_sports_teams.txt", $content)),
-                            fn(\Throwable $error) => $message->react("🔥")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
+                            fn(\Throwable $error): PromiseInterface => $message->react("🔥")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
                         ),
                     ['Ambassador', 'Admin'])
                 ->offsetSet("{$gameserver->key}panic",
@@ -1143,15 +1151,15 @@ class MessageServiceManager
                 ->offsetSet("{$gameserver->key}fixembedtimer",
                     fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                         $message->react("⏱️")->then(fn() => $gameserver->currentRoundEmbedTimer($message))->then(
-                            fn() => $message->react("👍"),
-                            fn(\Throwable $error) => $message->react("👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
+                            static fn() => $message->react("👍"),
+                            fn(\Throwable $error): PromiseInterface => $message->react("👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
                         ),
                     ['Owner', 'Chief Technical Officer'])
                 ->offsetSet("{$gameserver->key}updatecurrentroundembedmessagebuilder",
                     fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                         $message->react("⏱️")->then(fn() => $gameserver->updateCurrentRoundEmbedMessageBuilder())->then(
-                            fn() => $message->react("👍"),
-                            fn(\Throwable $error) => $message->react("👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
+                            static fn() => $message->react("👍"),
+                            fn(\Throwable $error): PromiseInterface => $message->react("👎")->then(fn() => $this->civ13->reply($message, $error->getMessage()))
                         ),
                     ['Owner', 'Chief Technical Officer']);
         }

@@ -454,7 +454,7 @@ class GameServer
 
         $fulfilledEdit   = fn(?Message $message = null) => $message ? $message->edit($builder)->then($this->civ13->onFulfilledDefault, $this->civ13->onRejectedDefault) : null;
         $fulfilledSend   = fn(Message $message) => $this->civ13->VarSave("{$this->key}_current_round_message_id.json", [$this->current_round_message_id = $message->id]);
-        $fulfilledReject = fn(\Throwable $error) => $channel->sendMessage($builder)->then($fulfilledSend, $this->civ13->onRejectedDefault);
+        $fulfilledReject = fn(\Throwable $error): PromiseInterface => $channel->sendMessage($builder)->then($fulfilledSend, $this->civ13->onRejectedDefault);
         
         if ($this->current_round_message_id) return $channel->messages->fetch($this->current_round_message_id)->then($fulfilledEdit, $fulfilledReject);
         if (! $this->current_round_message_id) // Attempt to load the current round message ID from the file cache
@@ -712,7 +712,7 @@ class GameServer
             if (isset($this->civ13->role_ids['mapswap']) && $role = $this->civ13->role_ids['mapswap']); $msg = "<@&$role>, {$this->name} $msg";
             $channel->sendMessage($msg);
         }
-        $this->loop->addTimer(10, fn() => OSFunctions::execInBackground("python3 {$this->basedir}" . Civ13::mapswap . " $mapto"));
+        $this->loop->addTimer(10, static fn() => OSFunctions::execInBackground("python3 {$this->basedir}" . Civ13::mapswap . " $mapto"));
         return resolve($msg);
     }
 
@@ -1393,8 +1393,8 @@ class GameServer
     public function parseRoundTime(string $time)
     {
         [$hours, $minutes] = array_map('intval', explode(':', $time) + [0, 0]);
-        $hours = $hours % 24;
         $days = floor($hours / 24);
+        $hours = $hours % 24;
         return ($days ? $days . 'd' : '') . ($hours ? $hours . 'h' : '') . $minutes . 'm';
     }
     /**

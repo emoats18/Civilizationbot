@@ -67,7 +67,7 @@ class Polls
      */
     public static function getPoll(Discord $discord, string $type): PromiseInterface
     {
-        if (! isset(self::${$type . '_QUESTION'})) return reject(new \Exception('Invalid poll type'));
+        if (! isset(self::${strtoupper($type) . '_QUESTION'})) return reject(new \Exception('Invalid poll type'));
         return resolve(
             (new Poll($discord))
                 ->setQuestion(        self::{$type . '_QUESTION'         }) // The question of the poll. Only text is supported

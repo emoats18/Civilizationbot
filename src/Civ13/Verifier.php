@@ -252,7 +252,7 @@ class Verifier
         $this->pending->pushItem(
             ['discord' => $discord_id,
             'ss13' => $ckey,
-            'token' => $token = implode('', array_map(fn() => $charset[random_int(0, strlen($charset) - 1)], range(1, $length)))
+            'token' => $token = implode('', array_map(static fn() => $charset[random_int(0, strlen($charset) - 1)], range(1, $length)))
         ]);
         return $token;
     }

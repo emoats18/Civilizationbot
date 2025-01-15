@@ -770,7 +770,7 @@ class Civ13
         return $patch
             ? ((($new_roles = $member->roles->filter(fn(Role $role) => ! in_array($role->id, $role_ids))->toArray()) !== $member->roles) ? $member->setRoles($new_roles) : resolve($member))
             : all(array_map(fn($role) => $member->removeRole($role->id), $role_ids))
-                ->then(fn() => $member->guild->members->get('id', $member->id));
+                ->then(static fn() => $member->guild->members->get('id', $member->id));
     }
     /**
      * Adds specified roles to a member.
@@ -786,7 +786,7 @@ class Civ13
         return $patch
             ? $member->setRoles(array_merge(array_values($member->roles->map(fn($role) => $role->id)->toArray()), $role_ids))
             : all(array_map(fn($role) => $member->addRole($role->id), $role_ids))
-                ->then(fn() => $member->guild->members->get('id', $member->id));
+                ->then(static fn() => $member->guild->members->get('id', $member->id));
     }
     /**
      * Updates specifiec roles for a member.

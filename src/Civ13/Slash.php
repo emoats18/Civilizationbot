@@ -764,11 +764,11 @@ class Slash
             
             $promise = $interaction->acknowledge(); // wait until the bot says "Is thinking..."
             $promise = $promise->then(
-                fn(): PromiseInterface => $gameserver->recalculateRanking(),
+                static fn(): PromiseInterface => $gameserver->recalculateRanking(),
                 fn(\LogicException $e) => $this->logger->error($e->getMessage())
             );
             $promise = $promise->then(
-                fn(): PromiseInterface => $gameserver->getRanking(),
+                static fn(): PromiseInterface => $gameserver->getRanking(),
                 fn(MissingSystemPermissionException $e): PromiseInterface => $this->sendFollowUpMessage($interaction, MessageBuilder::new()->setContent($e->getMessage()), true)
             );
             $promise = $promise->then(
