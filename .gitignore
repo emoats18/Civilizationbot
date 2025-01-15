@@ -15,3 +15,4 @@ composer.lock
 output.log
 ranking.txt
 test.php
+config.json
