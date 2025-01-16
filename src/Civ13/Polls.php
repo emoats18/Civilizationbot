@@ -78,6 +78,16 @@ class Polls
         );
     }
 
+    /**
+     * Lists all poll questions by extracting the constant names that end with '_QUESTION'.
+     *
+     * This method uses reflection to get all constants defined in the class,
+     * filters them to include only those whose names end with '_QUESTION',
+     * and then maps these names to remove the '_QUESTION' suffix.
+     * The resulting array is then flipped, making the original names the values.
+     *
+     * @return array An associative array where the keys are the poll names without the '_QUESTION' suffix.
+     */
     public static function listPolls(): array
     {        
         return array_flip(array_map(fn($name) => substr($name, 0, -9), array_filter(array_keys((new \ReflectionClass(__CLASS__))->getConstants()), fn($name) => str_ends_with($name, '_QUESTION'))));

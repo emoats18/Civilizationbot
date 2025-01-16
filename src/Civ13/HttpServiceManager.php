@@ -315,7 +315,7 @@ class HttpServiceManager
                         : $this->civ13->sendMessage($channel, 'Updating code from GitHub... (1/2)');
                     $promise->then(fn(Message $message) => OSFunctions::execInBackground('git pull'));
                     $this->civ13->loop->addTimer(5, fn(): PromiseInterface => $promise
-                        ->then(fn(Message $message): PromiseInterface => $message->edit(MessageBuilder::new()->setContent('Forcefully moving the HEAD back to origin/main... (2/2)')))
+                        ->then(static fn(Message $message): PromiseInterface => $message->edit(MessageBuilder::new()->setContent('Forcefully moving the HEAD back to origin/main... (2/2)')))
                         ->then(fn(Message $message) => $this->civ13->restart_message = $message)
                         ->then(static fn() => OSFunctions::execInBackground('git reset --hard origin/main'))
                         /*if (isset($this->civ13->timers['restart_pending']) && $this->civ13->timers['restart_pending'] instanceof TimerInterface) $this->civ13->loop->cancelTimer($this->civ13->timers['restart_pending']);
