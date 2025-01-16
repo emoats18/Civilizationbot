@@ -579,6 +579,10 @@ class MessageServiceManager
                         static fn(\Throwable $error): PromiseInterface => $message->react('👎')->then(static fn() => $message->reply($error->getMessage()))
                     ),
                 ['Admin'])
+            ->offsetSet('listpolls',
+                fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
+                    $message->reply(MessageBuilder::new()->setContent("Available polls: `" . implode('`, `', Polls::listPolls()) . "`")),
+                ['Admin'])
             ->offsetSet('fullbancheck',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                     array_map(fn($member) => ($item = $this->civ13->verifier->getVerifiedItem($member)) ? $this->civ13->bancheck($item['ss13']) : null, $message->guild->members->toArray())
