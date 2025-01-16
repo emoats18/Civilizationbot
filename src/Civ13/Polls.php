@@ -68,7 +68,7 @@ class Polls
     public static function getPoll(Discord $discord, string $type): PromiseInterface
     {
         $type = strtoupper($type);
-        if (! defined('self::' . $type . '_QUESTION')) return reject(new \Exception("Invalid poll type `$type`"));
+        if (! isset(self::listPolls()[$type])) return reject(new \Exception("Invalid poll type `$type`. Available polls: " . implode(', ', array_keys(self::listPolls()))));
         return resolve(
             (new Poll($discord))
                 ->setQuestion(         constant('self::' . $type . '_QUESTION')         ) // The question of the poll. Only text is supported
@@ -76,5 +76,10 @@ class Polls
                 ->setAllowMultiselect( constant('self::' . $type . '_ALLOW_MULTISELECT')) // Whether a user can select multiple answers
                 ->setDuration(         constant('self::' . $type . '_DURATION')         ) // Number of hours the poll should be open for, up to 32 days. Defaults to 24
         );
+    }
+
+    public static function listPolls(): array
+    {        
+        return array_flip(array_map(fn($name) => substr($name, 0, -9), array_filter(array_keys((new \ReflectionClass(__CLASS__))->getConstants()), fn($name) => str_ends_with($name, '_QUESTION'))));
     }
 }

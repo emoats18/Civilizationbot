@@ -379,7 +379,6 @@ $webapi->on('error', function (Exception $e, ?\Psr\Http\Message\RequestInterface
     }
 });
 
-$default = function(\Throwable $reason) use ($logger): void { $logger->error("Promise rejected with reason: `$reason`"); };
-set_rejection_handler($default);
+set_rejection_handler(static fn(\Throwable $reason) => $logger->error('Promise rejected:' . PHP_EOL . $reason));
 $civ13 = new Civ13($options, $server_settings);
 $civ13->run();

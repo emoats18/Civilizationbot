@@ -448,7 +448,7 @@ class GameServer
             return reject(new PartException($err));
         }
         if (! $builder = $this->createCurrentRoundEmbedMessageBuilder()) {
-            $this->logger->error($err = "Could not create a MessageBuilder for {$this->key}");
+            $this->logger->error($err = "Could not create a MessageBuilder for `{$this->key}`");
             return reject(new PartException($err));
         }
 
