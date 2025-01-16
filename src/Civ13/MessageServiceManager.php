@@ -630,44 +630,26 @@ class MessageServiceManager
                 },
                 ['Ambassador'])
             ->offsetSet('newmembers',
-                fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
-                    // usort MIGHT be too slow if there are thousands of members. It currently resolves in less than a second with 669 members, but this is a future-proofed method.
+                fn(Message $message, string $command, array $message_filtered): PromiseInterface => // usort MIGHT be too slow if there are thousands of members. It currently resolves in less than a second with 669 members, but this is a future-proofed method.
                     resolve($message->guild->members->toArray()) // Check all members without filtering by date (it's too slow and not necessary because we're only displaying the 10 most recent members anyway)
-                        ->then(function ($members) {
-                            return \React\Promise\all($members);
+                        ->then(static function (array $members) {
+                            usort($members, static fn($a, $b) => $b->joined_at->getTimestamp() - $a->joined_at->getTimestamp());
+                            return array_map(static fn(Member $member) => [
+                                'username' => $member->user->username,
+                                'id' => $member->id,
+                                'join_date' => $member->joined_at->format('Y-m-d H:i:s')
+                            ], $members);
                         })
-                        ->then(function ($members) {
-                            usort($members, fn($a, $b) => $b->joined_at->getTimestamp() - $a->joined_at->getTimestamp());
-                            $promises = array_map(function (Member $member) {
-                                return new \React\Promise\Promise(function ($resolve) use ($member) {
-                                    $resolve([
-                                        'username' => $member->user->username,
-                                        'id' => $member->id,
-                                        'join_date' => $member->joined_at->format('Y-m-d H:i:s')
-                                    ]);
-                                });
-                            }, $members);
-                            return \React\Promise\all($promises);
-                        })
-                        ->then(function ($sortedMembers) use ($message) {
-                            $memberCount = 10; // Number of members to display
-                            $mostRecentMembers = array_slice($sortedMembers, 0, $memberCount);
-                            // if (count($mostRecentMembers) < $memberCount) $memberCount = count($mostRecentMembers); // If there are less than 10 members, display all of them
-
-                            $membersData = [];
-                            foreach ($mostRecentMembers as $member) {
-                                $membersData[] = [
-                                    'username' => $member['username'],
-                                    'id' => $member['id'],
-                                    'join_date' => $member['join_date']
-                                ];
-                            }
-                            return $membersData;
-                        })
-                        ->then(function ($membersData) use ($message) {
-                            $message->react("👍");
-                            return $message->reply(MessageBuilder::new()->addFileFromContent('new_members.json', json_encode($membersData, JSON_PRETTY_PRINT)));
-                        }),
+                        ->then(static fn(array $sortedMembers) =>
+                            array_map(static fn($member) => [
+                                'username' => $member['username'],
+                                'id' => $member['id'],
+                                'join_date' => $member['join_date']
+                            ], array_slice($sortedMembers, 0, 10)))
+                        ->then(static fn(array $data) => 
+                            $message->react("👍")
+                                //->then(static fn() => new Collection($data, 'user_id', Member::class))
+                                ->then(static fn(/*Collection $members*/) => $message->reply(MessageBuilder::new()->addFileFromContent('new_members.json', json_encode($data, JSON_PRETTY_PRINT))))),
                 ['Ambassador'])
             ->offsetSet('fullaltcheck',
                 function (Message $message, string $command, array $message_filtered): PromiseInterface
