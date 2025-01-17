@@ -585,9 +585,10 @@ class MessageServiceManager
                 ['Admin'])
             ->offsetSet('fullbancheck',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
-                    array_map(fn($member) => ($item = $this->civ13->verifier->getVerifiedItem($member)) ? $this->civ13->bancheck($item['ss13']) : null, $message->guild->members->toArray())
-                        ? $message->react("👍")
-                        : $message->react("👎"),
+                    $message->guild->members->map(fn(Member $member) =>
+                        ($item = $this->civ13->verifier->getVerifiedItem($member)) ? $this->civ13->bancheck($item['ss13']) : null)
+                            ? $message->react("👍")
+                            : $message->react("👎"),
                 ['Ambassador'])
             ->offsetSet('updatebans',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface => // Attempts to fill in any missing data for the ban
@@ -632,7 +633,8 @@ class MessageServiceManager
             ->offsetSet('newmembers',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                     $message->reply(MessageBuilder::new()->addFileFromContent('new_members.json', $message->guild->members
-                        ->sort(static fn(Member $a, Member $b) => $b->joined_at->getTimestamp() <=> $a->joined_at->getTimestamp())
+                        ->sort(static fn(Member $a, Member $b) =>
+                            $b->joined_at->getTimestamp() <=> $a->joined_at->getTimestamp())
                         ->slice(0, 10)
                         ->map(static fn(Member $member) => [
                             'username' => $member->user->username,

@@ -151,9 +151,9 @@ class HttpServiceManager
                         $channelStyle = $doc->createElement('style', '.channel { margin-left: 20px; }');
                         $guildDiv->appendChild($channelStyle);
                         
-                        $channels = $guild->channels->filter(fn($channel) => $channel->isTextBased());
-                        $channels = $channels->toArray();
-                        usort($channels, fn($a, $b) => $a->position <=> $b->position);
+                        $channels = $guild->channels
+                            ->filter(static fn($channel) => $channel->isTextBased())
+                            ->sort(static fn($a, $b) => $a->position <=> $b->position);
 
                         foreach ($channels as $channel) {
                             $channelDiv = $doc->createElement('div');
