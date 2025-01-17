@@ -630,26 +630,16 @@ class MessageServiceManager
                 },
                 ['Ambassador'])
             ->offsetSet('newmembers',
-                fn(Message $message, string $command, array $message_filtered): PromiseInterface => // usort MIGHT be too slow if there are thousands of members. It currently resolves in less than a second with 669 members, but this is a future-proofed method.
-                    resolve($message->guild->members->toArray()) // Check all members without filtering by date (it's too slow and not necessary because we're only displaying the 10 most recent members anyway)
-                        ->then(static function (array $members) {
-                            usort($members, static fn($a, $b) => $b->joined_at->getTimestamp() - $a->joined_at->getTimestamp());
-                            return array_map(static fn(Member $member) => [
-                                'username' => $member->user->username,
-                                'id' => $member->id,
-                                'join_date' => $member->joined_at->format('Y-m-d H:i:s')
-                            ], $members);
-                        })
-                        ->then(static fn(array $sortedMembers) =>
-                            array_map(static fn($member) => [
-                                'username' => $member['username'],
-                                'id' => $member['id'],
-                                'join_date' => $member['join_date']
-                            ], array_slice($sortedMembers, 0, 10)))
-                        ->then(static fn(array $data) => 
-                            $message->react("👍")
-                                //->then(static fn() => new Collection($data, 'user_id', Member::class))
-                                ->then(static fn(/*Collection $members*/) => $message->reply(MessageBuilder::new()->addFileFromContent('new_members.json', json_encode($data, JSON_PRETTY_PRINT))))),
+                fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
+                    $message->reply(MessageBuilder::new()->addFileFromContent('new_members.json', $message->guild->members
+                        ->sort(static fn(Member $a, Member $b) => $b->joined_at->getTimestamp() <=> $a->joined_at->getTimestamp())
+                        ->slice(0, 10)
+                        ->map(static fn(Member $member) => [
+                            'username' => $member->user->username,
+                            'id' => $member->id,
+                            'join_date' => $member->joined_at->format('Y-m-d H:i:s')
+                        ])
+                        ->serialize(JSON_PRETTY_PRINT))),
                 ['Ambassador'])
             ->offsetSet('fullaltcheck',
                 function (Message $message, string $command, array $message_filtered): PromiseInterface
