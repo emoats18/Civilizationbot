@@ -35,6 +35,7 @@ enum ModerationMethod: string {
     case RUSSIAN = 'russian';
     case CHINESE = 'chinese';
     case KOREAN = 'korean';
+    case SPANISH = 'spanish'; const SPANISH_CHARS = ['ñ', 'Ñ', 'á', 'é', 'í', 'ó', 'ú', 'Á', 'É', 'Í', 'Ó', 'Ú', 'ü', 'Ü'];
     //case UNICODE = 'unicode';
     case STR_STARTS_WITH = 'str_starts_with';
     case STR_ENDS_WITH = 'str_ends_with';
@@ -49,11 +50,17 @@ enum ModerationMethod: string {
             self::RUSSIAN => preg_match('/\p{Cyrillic}/u', $lower),
             self::CHINESE => preg_match('/\p{Han}/u', $lower),
             self::KOREAN => preg_match('/\p{Hangul}/u', $lower),
+            self::SPANISH => self::str_contains_any($lower, self::SPANISH_CHARS),
             self::STR_STARTS_WITH => str_starts_with($lower, $badwords['word']),
             self::STR_ENDS_WITH => str_ends_with($lower, $badwords['word']),
             self::STR_CONTAINS => str_contains($lower, $badwords['word']),
             // default => str_contains($lower, $badwords['word']), // Redundant
         };
+    }
+
+    private static function str_contains_any(string $haystack, array $needles): bool
+    {
+        return array_reduce($needles, static fn($carry, $needle) => $carry || str_contains($haystack, $needle), false);
     }
 }
 
