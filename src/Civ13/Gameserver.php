@@ -479,17 +479,26 @@ class GameServer
                     //->addFieldValues('Game ID', $game_id);
                     ->addFieldValues('Start', $round['start'] ?? 'Unknown', true)
                     ->addFieldValues('End', $round['end'] ?? 'Ongoing/Unknown', true);
-            if (isset($data[7])) $embed->addFieldValues('Round Time', $this->parseRoundTime($data[7]), true);
-            if (isset($data[8])) $embed->addFieldValues('Map', $data[8], true);
-            if (isset($data[9])) $embed->addFieldValues('Epoch', $data[9], true);
+            if (isset($data[7]))  $embed->addFieldValues('Round Time', $this->parseRoundTime($data[7]), true);
+            if (isset($data[8]))  $embed->addFieldValues('Map', $data[8], true);
+            if (isset($data[9]))  $embed->addFieldValues('Epoch', $data[9], true);
             if (isset($data[10])) $embed->addFieldValues('Season', $data[10], true);
-            if ($this->players) $embed->addFieldValues('Online Players (' . count($this->players) . ')', empty($this->players) ? 'N/A' : implode(', ', $this->players), true);
-            if (($players = implode(', ', array_keys($round['players']))) && strlen($players) <= 1024) $embed->addFieldValues('Participating Players (' . count($round['players']) . ')', $players);
-            else $embed->addFieldValues('Participating Players (' . count($round['players']) . ')', 'Either none or too many to list!');
-            if ($discord_ids = array_filter(array_map(fn($c) => ($item = $this->civ13->verifier->get('ss13', $c)) ? "<@{$item['discord']}>" : null, array_keys($round['players'])))) {
-                if (strlen($verified_players = implode(', ', $discord_ids)) <= 1024) $embed->addFieldValues('Verified Players (' . count($discord_ids) . ')', $verified_players);
-                else $embed->addFieldValues('Verified Players (' . count($discord_ids) . ')', 'Too many to list!');
-            }
+            if ($this->players)   $embed->addFieldValues('Online Players (' . count($this->players) . ')', empty($this->players) ? 'N/A' : implode(', ', $this->players), true);
+            $embed->addFieldValues(
+                'Participating Players (' . count($players = array_keys($round['players'])) . ')',
+                $players
+                    ? (strlen($participating_players = implode(', ', $players)) <= 1024
+                        ? $participating_players
+                        : substr($participating_players, 0, 1021) . '...')
+                    : 'None'
+            );
+            if ($discord_ids = array_filter(array_map(fn($c) => ($item = $this->civ13->verifier->get('ss13', $c)) ? "<@{$item['discord']}>" : null, $players)))
+                $embed->addFieldValues(
+                    'Verified Players (' . count($discord_ids) . ')',
+                    strlen($verified_players = implode(', ', $discord_ids)) <= 1024
+                        ? $verified_players
+                        : substr($verified_players, 0, 1021) . '...'
+                );
             return MessageBuilder::new()->setContent("Round data for game_id `$this->current_round`")->addEmbed($embed);
         };
         $builder = $round_embed_builder();
