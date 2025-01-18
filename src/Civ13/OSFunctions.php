@@ -22,6 +22,12 @@ use function React\Promise\resolve;
  */
 class OSFunctions
 {
+    const array DEFAULT_PIPES = [
+        0 => ['pipe', 'r'],
+        1 => ['pipe', 'w'],
+        2 => ['pipe', 'w']
+    ];
+
     /**
      * Spawns a child process to execute the given command.
      *
@@ -62,12 +68,7 @@ class OSFunctions
             if (($p = popen("start {$cmd}", "r")) === false) return reject(new MissingSystemPermissionException('popen() failed'));
             return resolve($p);
         }
-        $descriptorspec = [
-            0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w']
-        ];
-        if (! $proc = proc_open($cmd, $descriptorspec, $pipes)) return reject(new MissingSystemPermissionException('proc_open() failed')); // old method was "sudo nohup $cmd > /dev/null &"
+        if (! $proc = proc_open($cmd, self::DEFAULT_PIPES, $pipes)) return reject(new MissingSystemPermissionException('proc_open() failed')); // old method was "sudo nohup $cmd > /dev/null &"
         if (! $proc_details = proc_get_status($proc)) return reject(new MissingSystemPermissionException('proc_get_status() failed'));
         if (! isset($proc_details['pid']) || ! $pid = $proc_details['pid']) return reject(new MissingSystemPermissionException('proc_get_status() did not return a PID'));
         error_log("Executing external shell command `$cmd` with PID $pid");
@@ -90,12 +91,7 @@ class OSFunctions
             if (($p = popen('cmd /c "' . getcwd() . '\run.bat"', "r")) === false) return reject(new MissingSystemPermissionException('popen() failed'));
             return resolve($p);
         }
-        $descriptorspec = [
-            0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w']
-        ];
-        if (($proc = proc_open($output = "sudo nohup php \"$file\" > botlog.txt &", $descriptorspec, $pipes)) === false) return reject(new MissingSystemPermissionException('proc_open() failed'));
+        if (($proc = proc_open($output = "sudo nohup php \"$file\" > botlog.txt &", self::DEFAULT_PIPES, $pipes)) === false) return reject(new MissingSystemPermissionException('proc_open() failed'));
         if (! $pid = proc_get_status($proc)['pid']) return reject(new MissingSystemPermissionException('proc_get_status() failed'));
         error_log("Executing external shell command `$output` with PID $pid");
         return resolve($proc);
