@@ -706,8 +706,7 @@ class Slash
                 ->addFieldValues('Games Played', count($game_ids), true)
                 ->addFieldValues('Unique Players Played With', count($players), true);
 
-            $messagebuilder = MessageBuilder::new();
-            $messagebuilder
+            $messagebuilder = (MessageBuilder::new())
                 ->setContent("Statistics for `{$item['ss13']}` starting from <t:1688464620:D>")
                 ->addEmbed($embed);
             return $this->respondWithMessage($interaction, $messagebuilder, true);

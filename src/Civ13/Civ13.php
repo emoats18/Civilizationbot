@@ -125,6 +125,8 @@ class Civ13
     const array faction_teams = ['Red Faction', 'Blue Faction'];
     /** @var array<string> */
     const array faction_admins = ['Faction Organizer'];
+    
+    public readonly string $gitdir;
     /** @var array<string|null> */
     public readonly array $faction_ids;
 
@@ -178,7 +180,6 @@ class Civ13
     public array $seen_players = []; // Collected automatically by serverinfo_timer
     public int $playercount_ticker = 0;
 
-    public readonly string $gitdir;  // The base directory of the git repository.
     /** @var Gameserver[] */
     public array $gameservers = [];
     /** @var Gameserver[] */
