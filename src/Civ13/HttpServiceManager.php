@@ -804,7 +804,7 @@ class HttpServiceManager
                             $json[] = [
                                 'id' => $id,
                                 'banType' => $ban_type,
-                                'cKey' => $ban[8],
+                                'ckey' => $ban[8],
                                 'bannedOn' => $banned_on,
                                 'bannedBy' => $ban[4],
                                 'reason' => $ban[3],
