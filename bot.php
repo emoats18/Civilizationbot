@@ -136,7 +136,7 @@ $ic_badwords = $ooc_badwords = [
     ['word' => 'RU',          'duration' => '1 hour', 'reason' => 'только английский.', 'category' => 'language', 'method' => 'russian',  'warnings' => 2],
     ['word' => 'CN',          'duration' => '1 hour', 'reason' => '仅英语.',             'category' => 'language', 'method' => 'chinese',  'warnings' => 2],
     ['word' => 'KR',          'duration' => '1 hour', 'reason' => '영어로만 제공.',      'category' => 'language', 'method' => 'korean',   'warnings' => 2],
-    ['word' => 'ES',          'duration' => '1 hour', 'reason' => 'Solo inglés.',       'category' => 'language', 'method' => 'spanish',  'warnings' => 2],
+    //['word' => 'ES',          'duration' => '1 hour', 'reason' => 'Solo inglés.',       'category' => 'language', 'method' => 'spanish',  'warnings' => 2],
 ];
 $options = array(
     'github' => 'https://github.com/New-Civ13/Civilizationbot',
