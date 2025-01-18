@@ -20,6 +20,7 @@ use Discord\Builders\Components\ActionRow;
 use Discord\Builders\Components\Button;
 use Discord\Builders\MessageBuilder;
 use Discord\Helpers\Collection;
+use Discord\Helpers\CollectionInterface;
 use Discord\Parts\Channel\Channel;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Embed\Embed;
@@ -339,7 +340,7 @@ class GameServer
         
         ($ckey)
             ? $this->__gameChatRelay($channel, ['ckey' => $ckey, 'message' => $message, 'server' => explode('-', $channel->name)[1]], $ooc, $moderate)    
-            : $this->civ13->sendMessage($channel_id, $message); // Send the message as is if no ckey is provided
+            : $this->civ13->sendMessage($channel_id, $message, 'message.txt', true); // Send the message as is if no ckey is provided
         return resolve(null);
     }
     /**
@@ -372,13 +373,11 @@ class GameServer
                 $badword_warnings
             );
         }
-        if (! $item = $this->civ13->verifier->get('ss13', Civ13::sanitizeInput($array['ckey']))) {
-            return $this->civ13->sendMessage($channel, $array['message'], 'relay.txt', false, false);
-        }
+        if (! $item = $this->civ13->verifier->get('ss13', Civ13::sanitizeInput($array['ckey']))) return $this->civ13->sendMessage($channel, $array['message'], 'relay.txt', false, true);
         $embed = $this->civ13->createEmbed(false)->setDescription($array['message']);
         if ($user = $this->discord->users->get('id', $item['discord'])) $embed->setAuthor("{$user->username} ({$user->id})", $user->avatar);
         // else $this->discord->users->fetch('id', $item['discord']); // disabled to prevent rate limiting
-        return $channel->sendMessage(MessageBuilder::new()->addEmbed($embed));
+        return $channel->sendMessage(MessageBuilder::new()->addEmbed($embed)->setAllowedMentions(['parse'=>[]]));
     }
     public function relayTimer(): ?TimerInterface
     {
@@ -448,7 +447,7 @@ class GameServer
             return reject(new PartException($err));
         }
         if (! $builder = $this->createCurrentRoundEmbedMessageBuilder()) {
-            $this->logger->error($err = "Could not create a MessageBuilder for `{$this->key}`");
+            $this->logger->error($err = "Could not create a MessageBuilder for {$this->key}");
             return reject(new PartException($err));
         }
 
@@ -952,7 +951,7 @@ class GameServer
         if (self::explodeServerdata($data)[12] ?? true) return false; // Whether restart vote is allowed
         if (! $guild = $this->discord->guilds->get('id', $this->civ13->civ13_guild_id)) return false;
         if (! $admins = $guild->members->filter(fn(Member $member) => $member->roles->has($this->civ13->role_ids['Admin']))) return false; // Get a list of admins from the Discord server
-        if (array_reduce($admins->toArray(), function ($carry, $member) { // Check if any of the admins are online
+        if (! $admins->reduce(function ($carry, $member) {
             /** @var bool $carry */
             if ($carry) return $carry;
             /** @var Member $member */
@@ -1051,7 +1050,7 @@ class GameServer
      *
      * @return array An array of collections, where each collection represents a server and its rounds.
      */
-    public function getRoundsCollection(): Collection // [string $server, collection $rounds]
+    public function getRoundsCollection(): CollectionInterface // [string $server, collection $rounds]
     {
         return new Collection(array_filter(array_map(fn($game_id, $round) => array_merge($round, ['game_id' => $game_id]), array_keys($this->rounds), $this->rounds)), 'game_id');
     }
