@@ -1659,7 +1659,7 @@ class Civ13
         //if ($status === 'offline') $msg .= PHP_EOL . "Webserver technician <@{$this->technician_id}> has been notified.";
         $channel->name = "{$webserver_name}-{$status}";
         return $this->then(
-            $this->sendMessage($this->discord->getChannel($channel->id), "Webserver is now **{$status}**."),
+            $this->sendMessage($this->discord->getChannel($channel->id), "Webserver is now `{$status}`."),
             fn(Message $message) => $channel->guild->channels->save($channel)
         );
     }

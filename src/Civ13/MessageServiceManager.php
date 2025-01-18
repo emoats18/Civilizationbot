@@ -131,8 +131,8 @@ class MessageServiceManager
                         if (! $item = $this->civ13->verifier->get('discord', $ckey)) return $this->civ13->reply($message, "No ckey found for Discord ID `$ckey`.");
                         $ckey = $item['ss13'];
                     }
-                    if (! $json = Byond::bansearch_centcom($ckey)) return $this->civ13->reply($message, "Unable to locate bans for **$ckey** on centcom.melonmesa.com.");
-                    if ($json === '[]') return $this->civ13->reply($message, "No bans were found for **$ckey** on centcom.melonmesa.com.");
+                    if (! $json = Byond::bansearch_centcom($ckey)) return $this->civ13->reply($message, "Unable to locate bans for `$ckey` on centcom.melonmesa.com.");
+                    if ($json === '[]') return $this->civ13->reply($message, "No bans were found for `ckey` on centcom.melonmesa.com.");
                     return $this->civ13->reply($message, $json, $ckey.'_bans.json', true);
                 }, ['Verified'])
             ->offsetSet('bancheck',
@@ -159,12 +159,13 @@ class MessageServiceManager
                                 $reason = $linesplit[3];
                                 $admin = $linesplit[4];
                                 $date = $linesplit[5];
-                                $content .= "**$ckey** has been **$type** banned from **{$gameserver->name}** on **$date** for **$reason** by $admin." . PHP_EOL;
+                                $duration = $linesplit[7];
+                                $content .= "`$date`: `$admin` `$type` banned `$ckey` from `{$gameserver->name}` for `{$duration}` with the reason `$reason`" . PHP_EOL;
                             }
                         }
                         fclose($file);
                     }
-                    if (! $found) $content .= "No bans were found for **$ckey**." . PHP_EOL;
+                    if (! $found) $content .= "No bans were found for `$ckey`." . PHP_EOL;
                     elseif (isset($this->civ13->role_ids['Banished']) && $member = $this->civ13->verifier->getVerifiedMember($ckey))
                         if (! $member->roles->has($this->civ13->role_ids['Banished']))
                             $member->addRole($this->civ13->role_ids['Banished']);
@@ -493,7 +494,7 @@ class MessageServiceManager
                     if (isset($this->civ13->verifier) && ! $message->member->roles->has($this->civ13->role_ids['Ambassador']) && ! $this->civ13->verifier->isVerified($ckey)) return $this->civ13->reply($message, "No verified data found for ID `$ckey`. Byond user must verify with `approveme` first.");
                     if (! isset($this->civ13->ages[$ckey]) && ! Byond::isValidCkey($ckey)) return $this->civ13->reply($message, "Byond username `$ckey` does not exist.");
                     $this->civ13->unban($ckey, $admin = $this->civ13->verifier->getVerifiedItem($message->author)['ss13']);
-                    return $this->civ13->reply($message, "**$admin** unbanned **$ckey**");
+                    return $this->civ13->reply($message, "`$admin` unbanned `$ckey`");
                 }, ['Admin'])
             ->offsetSet('maplist',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
@@ -964,7 +965,7 @@ class MessageServiceManager
                                     case 'iron cross 2nd class': $medal_s = '<:iron_cross2:705786458849673267>'; break;
                                     default:  $medal_s = '<:long_service:705786458874707978>';
                                 }
-                                $result .= "**{$duser[1]}:** {$medal_s} **{$duser[2]}**, *{$duser[4]}*, {$duser[5]}" . PHP_EOL;
+                                $result .= "`{$duser[1]}:` {$medal_s} **{$duser[2]}, *{$duser[4]}*, {$duser[5]}" . PHP_EOL;
                             }
                         }
                         if ($result != '') return $result;
@@ -1093,7 +1094,7 @@ class MessageServiceManager
                         }
                         
                         $this->civ13->unban($ckey, $admin = $this->civ13->verifier->getVerifiedItem($message->author)['ss13'], $gameserver);
-                        $result = "**$admin** unbanned **$ckey** from **{$gameserver->name}**";
+                        $result = "`$admin` unbanned `$ckey` from `{$gameserver->name}`";
                         if ($member = $this->civ13->verifier->getVerifiedMember('id', $ckey))
                             if ($member->roles->has($this->civ13->role_ids['Banished']))
                                 $member->removeRole($this->civ13->role_ids['Banished'], $result);

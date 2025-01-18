@@ -1002,7 +1002,7 @@ class GameServer
         fwrite($file, "$admin:::{$array['ckey']}:::{$array['duration']}:::{$array['reason']}" . PHP_EOL);
         fclose($file);
         if (! isset($this->timers["banlog_update_{$array['ckey']}"])) $this->civ13->timers["banlog_update_{$array['ckey']}"] = $this->civ13->discord->getLoop()->addTimer(360, fn() => array_walk($this->civ13->enabled_gameservers, fn(GameServer &$gameserver) => $gameserver->banlog_update($array['ckey'], file_get_contents($this->basedir . Civ13::playerlogs)))); // Attempts to fill in any missing data for the ban
-        return "**$admin** banned **{$array['ckey']}** from **{$this->name}** for **{$array['duration']}** with the reason **{$array['reason']}**" . PHP_EOL;
+        return "`$admin` `Server` banned `{$array['ckey']}` from `{$this->name}` for `{$array['duration']}` with the reason `{$array['reason']}`" . PHP_EOL;
     }
     private function sqlBan(array $array, ?string $admin = null): string
     {
@@ -1187,7 +1187,7 @@ class GameServer
             $sline = explode(';', trim(str_replace(PHP_EOL, '', $line)));
             if ($sline[1] == $ckey) {
                 $found = true;
-                $result .= "**{$sline[1]}** has a total rank of **{$sline[0]}**";
+                $result .= "`{$sline[1]}` has a total rank of `{$sline[0]}`";
             };
         }
         if (! $found) return "No medals found for ckey `$ckey`.";
@@ -1208,15 +1208,9 @@ class GameServer
         fclose($search);
 
         $topsum = 0;
-        /*$msg = '';
-        foreach ($line_array as $line) {
-            $sline = explode(';', trim(str_replace(PHP_EOL, '', $line)));
-            $msg .= "($topsum): **{$sline[1]}** with **{$sline[0]}** points." . PHP_EOL;
-            if (($topsum += 1) > 10) break;
-        }*/
         return resolve(implode(PHP_EOL, array_map(function ($line) use (&$topsum) {
             $sline = explode(';', trim(str_replace(PHP_EOL, '', $line)));
-            return '('.++$topsum."): **{$sline[1]}** with **{$sline[0]}** points.";
+            return '('.++$topsum."): `{$sline[1]}` with `{$sline[0]}` points.";
         }, array_slice($line_array, 0, 10)))); // Limit the array to only 10 values
     }
     /**

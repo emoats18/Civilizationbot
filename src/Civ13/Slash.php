@@ -522,7 +522,7 @@ class Slash
         {
             if (! $item = $this->civ13->verifier->get('discord', $interaction->data->target_id)) return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("<@{$interaction->data->target_id}> is not currently verified with a byond username or it does not exist in the cache yet"), true);
             return $interaction->acknowledge()->then(function () use ($interaction, $item) { // wait until the bot says "Is thinking..."
-                $response = '';
+                $content = '';
                 $reason = 'unknown';
                 $found = false;
                 foreach ($this->civ13->enabled_gameservers as &$gameserver) {
@@ -535,23 +535,24 @@ class Slash
                                 $reason = $linesplit[3];
                                 $admin = $linesplit[4];
                                 $date = $linesplit[5];
-                                $response .= "**{$item['ss13']}** has been **$type** banned from **{$gameserver->name}** on **$date** for **$reason** by $admin." . PHP_EOL;
+                                $duration = $linesplit[7];
+                                $content .= "`$date`: `$admin` `$type` banned `{$item['ss13']}` from `{$gameserver->name}` for `{$duration}` with the reason `$reason`" . PHP_EOL;
                             }
                         }
                         fclose($file);
                     }
                 }
                 if (! $found) {
-                    $response .= "No bans were found for **{$item['ss13']}**." . PHP_EOL;
+                    $content .= "No bans were found for `{$item['ss13']}`." . PHP_EOL;
                     if ($member = $this->civ13->verifier->getVerifiedMember($item['ss13']))
                         if ($member->roles->has($this->civ13->role_ids['Banished']))
                             $member->removeRole($this->civ13->role_ids['Banished']);
                 } elseif ($member = $this->civ13->verifier->getVerifiedMember($item['ss13']))
                     if (! $member->roles->has($this->civ13->role_ids['Banished']))
                         $member->addRole($this->civ13->role_ids['Banished']);
-                if (strlen($response)<=2000) return $this->sendFollowUpMessage($interaction, MessageBuilder::new()->setContent($response), true);
-                if (strlen($response)<=4096) return $this->sendFollowUpMessage($interaction, MessageBuilder::new()->addEmbed($this->civ13->createEmbed()->setDescription($response)));
-                return $this->respondWithMessage($interaction, MessageBuilder::new()->addFileFromContent($item['ss13'].'_bans.json', $response), true);
+                if (strlen($content)<=2000) return $this->sendFollowUpMessage($interaction, MessageBuilder::new()->setContent($content), true);
+                if (strlen($content)<=4096) return $this->sendFollowUpMessage($interaction, MessageBuilder::new()->addEmbed($this->civ13->createEmbed()->setDescription($content)));
+                return $this->respondWithMessage($interaction, MessageBuilder::new()->addFileFromContent($item['ss13'].'_bans.json', $content), true);
             });
         });
 
@@ -565,8 +566,8 @@ class Slash
         $this->discord->listenCommand('bansearch_centcom', function (Interaction $interaction): PromiseInterface
         {
             if (! isset($interaction->data->options['ckey']) || ! $ckey = Civ13::sanitizeInput($interaction->data->options['ckey']->value)) return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("No ckey specified"), true);
-            if (! $json = Byond::bansearch_centcom($ckey)) return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("Unable to locate bans for **$ckey** on centcom.melonmesa.com."), true);
-            if ($json === '[]') return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("No bans were found for **$ckey** on centcom.melonmesa.com."), true);
+            if (! $json = Byond::bansearch_centcom($ckey)) return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("Unable to locate bans for `$ckey` on centcom.melonmesa.com."), true);
+            if ($json === '[]') return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("No bans were found for `$ckey` on centcom.melonmesa.com."), true);
             return $this->respondWithMessage($interaction, MessageBuilder::new()->addFileFromContent($ckey.'_bans.json', $json), true);
         });
 
@@ -583,10 +584,10 @@ class Slash
             return $interaction->acknowledge()->then(function () use ($interaction, $item) { // wait until the bot says "Is thinking..."
                 if ($interaction->user->id !== $this->civ13->technician_id) return $this->sendFollowUpMessage($interaction, MessageBuilder::new()->setContent("You do not have permission to unverify <@{$interaction->data->target_id}>"), true);
                 return $this->sendFollowUpMessage($interaction, MessageBuilder::new()->setContent("Unverifying `{$item['ss13']}`..."))->then(function ($message) use ($interaction, $item) {
-                    $response = $this->civ13->verifier->unverify($item['ss13']);
+                    $content = $this->civ13->verifier->unverify($item['ss13']);
                     $interaction->updateOriginalResponse(MessageBuilder::new()->setContent("Processed request to unverify `{$item['ss13']}`."));
-                    if (! $response['success']) return $this->sendFollowUpMessage($interaction, MessageBuilder::new()->setContent($response['message']), true);
-                    return $this->sendFollowUpMessage($interaction, MessageBuilder::new()->setContent($response['message']), true);
+                    if (! $content['success']) return $this->sendFollowUpMessage($interaction, MessageBuilder::new()->setContent($content['message']), true);
+                    return $this->sendFollowUpMessage($interaction, MessageBuilder::new()->setContent($content['message']), true);
                 });
             });
         });
@@ -595,7 +596,7 @@ class Slash
         {
             if (! $item = $this->civ13->verifier->get('discord', $interaction->data->target_id)) return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("<@{$interaction->data->target_id}> is not currently verified with a byond username or it does not exist in the cache yet"), true);
             $this->civ13->unban($item['ss13'], $admin = $this->civ13->verifier->getVerifiedItem($interaction->user->id)['ss13'] ?? $interaction->user->username);
-            return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("**`$admin`** unbanned **`{$item['ss13']}`**."));
+            return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("`$admin` unbanned `{$item['ss13']}`."));
         });
 
         $this->discord->listenCommand('parole', function (Interaction $interaction): PromiseInterface
@@ -626,9 +627,9 @@ class Slash
         $this->discord->listenCommand('permitted', function (Interaction $interaction): PromiseInterface
         {
             if (! $item = $this->civ13->verifier->get('discord', $interaction->data->target_id)) return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("<@{$interaction->data->target_id}> is not currently verified with a byond username or it does not exist in the cache yet"), true);
-            $response = "**`{$item['ss13']}`** is not currently permitted to bypass Byond account restrictions.";
-            if (in_array($item['ss13'], $this->civ13->permitted)) $response = "**`{$item['ss13']}`** is currently permitted to bypass Byond account restrictions.";
-            return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent($response));
+            $content = "`{$item['ss13']}` is not currently permitted to bypass Byond account restrictions.";
+            if (in_array($item['ss13'], $this->civ13->permitted)) $content = "`{$item['ss13']}` is currently permitted to bypass Byond account restrictions.";
+            return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent($content));
         });
         */
         
@@ -636,14 +637,14 @@ class Slash
         {
             if (! $item = $this->civ13->verifier->get('discord', $interaction->data->target_id)) return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("<@{$interaction->data->target_id}> is not currently verified with a byond username or it does not exist in the cache yet"), true);
             $this->civ13->permitCkey($item['ss13']);
-            return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("**`{$interaction->user->username}`** has permitted **`{$item['ss13']}`** to bypass Byond account restrictions."));
+            return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("`{$interaction->user->username}` has permitted `{$item['ss13']}` to bypass Byond account restrictions."));
         });
 
         $this->discord->listenCommand('revoke', function (Interaction $interaction): PromiseInterface
         {
             if (! $item = $this->civ13->verifier->get('discord', $interaction->data->target_id)) return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("<@{$interaction->data->target_id}> is not currently verified with a byond username or it does not exist in the cache yet"), true);
             $this->civ13->permitCkey($item['ss13'], false);
-            return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("**`{$interaction->user->username}`** has removed permission from **`{$item['ss13']}`** to bypass Byond account restrictions."));
+            return $this->respondWithMessage($interaction, MessageBuilder::new()->setContent("`{$interaction->user->username}` has removed permission from `{$item['ss13']}` to bypass Byond account restrictions."));
         });
 
         $this->discord->listenCommand('ckeyinfo', fn(Interaction $interaction): PromiseInterface =>

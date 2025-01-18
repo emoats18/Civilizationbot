@@ -208,7 +208,7 @@ class Verifier
         //if ($status === 'offline') $msg .= PHP_EOL . "Verifier technician <@{$this->technician_id}> has been notified";
         $channel->name = "{$verifier_name}-{$status}";
         return $this->civ13->then(
-            $this->civ13->sendMessage($this->civ13->discord->getChannel($channel->id), "Verifier is now **{$status}**."),
+            $this->civ13->sendMessage($this->civ13->discord->getChannel($channel->id), "Verifier is now `{$status}`."),
             fn(Message $message) => $channel->guild->channels->save($channel)
         );
     }
