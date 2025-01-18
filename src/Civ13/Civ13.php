@@ -17,6 +17,7 @@ use Discord\Discord;
 use Discord\Builders\MessageBuilder;
 use Discord\Helpers\BigInt;
 use Discord\Helpers\Collection;
+use Discord\Helpers\CollectionInterface;
 use Discord\Parts\Channel\Channel;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Embed\Embed;
@@ -759,50 +760,82 @@ class Civ13
     /**
      * Removes specified roles from a member.
      *
-     * @param Member $member The member object from which the roles will be removed.
-     * @param Collection<Role>|array<Role|string|int>|Role|string|int $roles An array of role IDs to be removed.
-     * @param bool $patch Determines whether to use patch mode or not. If true, the member's roles will be updated using setRoles method. If false, the member's roles will be updated using removeRole method.
-     * @return PromiseInterface<Member> A promise that resolves to the updated member object.
+     * @param Member                                                  $member The member object from which the roles will be removed.
+     * @param Collection<Role>|array<Role|string|int>|Role|string|int $roles  An array of role IDs to be removed.
+     * @param bool                                                    $patch  Determines whether to use patch mode or not. If true, the member's roles will be updated using setRoles method. If false, the member's roles will be updated using removeRole method.
+     * @return PromiseInterface<Member>
      */
-    public function removeRoles(Member $member, Collection|array|Role|string|int $roles, bool $patch = true): PromiseInterface
+    public function removeRoles(
+        Member                           $member,
+        Collection|array|Role|string|int $roles,
+        bool                             $patch = true
+    ): PromiseInterface
     {
         if (! $role_ids = array_filter(self::__rolesToIdArray($roles), fn($role_id) => $member->roles->has($role_id))) return resolve($member);
         return $patch
-            ? ((($new_roles = $member->roles->filter(fn(Role $role) => ! in_array($role->id, $role_ids))->toArray()) !== $member->roles) ? $member->setRoles($new_roles) : resolve($member))
-            : all(array_map(fn($role) => $member->removeRole($role->id), $role_ids))
-                ->then(static fn() => $member->guild->members->get('id', $member->id));
+            ? ((($new_roles = $member->roles->filter(static fn(Role $role) =>
+                ! in_array($role->id, $role_ids))) !== $member->roles)
+                    ? $member->setRoles($new_roles->toArray())
+                    : resolve($member))
+            : array_reduce($role_ids, fn($promise, $role_id) =>
+                $promise->then(static fn() => $member->removeRole($role_id)),
+                $member->removeRole(array_shift($role_ids)))
+                    ->then(static fn() => $member->guild->members->get('id', $member->id));
     }
     /**
      * Adds specified roles to a member.
      *
-     * @param Member $member The member object to which the roles will be added.
-     * @param Collection<Role>|array<Role|string|int>|Role|string|int $roles An array of role IDs to be added.
-     * @param bool $patch Determines whether to use patch mode or not. If true, the member's roles will be updated using setRoles method. If false, the member's roles will be updated using addRole method.
-     * @return PromiseInterface<Member> A promise that resolves to the updated member object.
+     * @param Member                                                  $member The member object to which the roles will be added.
+     * @param Collection<Role>|array<Role|string|int>|Role|string|int $roles  An array of role IDs to be added.
+     * @param bool                                                    $patch  Determines whether to use patch mode or not. If true, the member's roles will be updated using setRoles method. If false, the member's roles will be updated using addRole method.
+     * @return PromiseInterface<Member>
      */
-    public function addRoles(Member $member, Collection|array|Role|string|int $roles, bool $patch = true): PromiseInterface
+    public function addRoles(
+        Member                           $member,
+        Collection|array|Role|string|int $roles,
+        bool                             $patch = true
+    ): PromiseInterface
     {
         if (! $role_ids = array_filter(self::__rolesToIdArray($roles), fn($role_id) => $member->roles->has($role_id))) return resolve($member);
         return $patch
-            ? $member->setRoles(array_merge(array_values($member->roles->map(fn($role) => $role->id)->toArray()), $role_ids))
-            : all(array_map(fn($role) => $member->addRole($role->id), $role_ids))
-                ->then(static fn() => $member->guild->members->get('id', $member->id));
+            ? $member->setRoles(
+                array_merge($member->roles
+                    ->map(fn($role) => $role->id)
+                    ->values(),    
+                $role_ids))
+            : array_reduce($role_ids, fn($promise, $role_id) =>
+                    $promise->then(static fn() => $member->addRole($role_id)),
+                    $member->addRole(array_shift($role_ids)))
+                        ->then(static fn() => $member->guild->members->get('id', $member->id));
     }
     /**
-     * Updates specifiec roles for a member.
+     * Updates specified roles for a member.
      *
-     * @param Member $member The member object to which will have its roles updated.
-     * @param Collection<Role>|array<Role|string|int>|Role|string|int $roles An array of role IDs to be added.
-     * @param Collection<Role>|array<Role|string|int>|Role|string|int $roles An array of role IDs to be removed.
-     * @return PromiseInterface<Member> A promise that resolves to the updated member object.
+     * @param  Member                                                  $member
+     * @param  Collection<Role>|array<Role|string|int>|Role|string|int $add_roles
+     * @param  Collection<Role>|array<Role|string|int>|Role|string|int $remove_roles
+     *
+     * @return PromiseInterface<Member>
      */
-    public function setRoles(Member $member, Collection|array|Role|string|int $add_roles = [], Collection|array|Role|string|int $remove_roles = []): PromiseInterface
+    public function setRoles(
+        Member                           $member,
+        Collection|array|Role|string|int $add_roles    = [],
+        Collection|array|Role|string|int $remove_roles = []
+    ): PromiseInterface
     {
-        if (! ($add_roles = self::__rolesToIdArray($add_roles)) && ! ($remove_roles = self::__rolesToIdArray($remove_roles))) return resolve($member);
-        foreach ($add_roles as &$role_id) if ($member->roles->has($role_id)) unset($role_id);
-        foreach ($remove_roles as &$role_id) if (! $member->roles->has($role_id)) unset($role_id);
-        if (! $updated_roles = array_diff(array_merge(array_values($member->roles->map(fn($role) => $role->id)->toArray()), $add_roles), $remove_roles)) return resolve($member);
-        return $member->setRoles($updated_roles);
+        if (! $add_roles    = self::__rolesToIdArray($add_roles   )) return resolve($member);
+        if (! $remove_roles = self::__rolesToIdArray($remove_roles)) return resolve($member);
+
+        foreach ($add_roles    as &$role_id)   if (  $member->roles->has($role_id))  unset($role_id);
+        foreach ($remove_roles as &$role_id)   if (! $member->roles->has($role_id))  unset($role_id);
+
+        return ($updated_roles = $member->roles
+            ->map(static fn($role) => $role->id)
+            //->values()
+            ->merge($add_roles)
+            ->diff($remove_roles))
+                ? $member->setRoles($updated_roles)
+                : resolve($member);
     }
     /**
      * Convert roles to an array of role IDs.
@@ -985,12 +1018,19 @@ class Civ13
     /**
      * Returns the highest role from a collection of roles.
      *
-     * @param Collection<Role> $roles The collection of roles.
-     * @return Role|null The highest role, or null if the collection is empty.
+     * @param  Collection<Role> $roles The collection of roles.
+     * 
+     * @return ?Role
      */
     function getHighestRole(Collection $roles): ?Role
     {
-        return array_reduce($roles->toArray(), fn($prev, $role) => ($prev === null ? $role : ($this->comparePositionTo($role, $prev) > 0 ? $role : $prev)));
+        return $roles->reduce(fn($prev, $role) =>
+            ($prev === null
+                ? $role
+                : ($this->comparePositionTo($role, $prev) > 0
+                    ? $role
+                    : $prev)))
+            ->shift();
     }
     /**
      * Checks if a member has a specific rank.
@@ -1506,7 +1546,7 @@ class Civ13
         return $this->softbanned;
     }
 
-    public function bansToCollection($log_collection = new Collection([], 'increment'), int $increment = 0): Collection
+    public function bansToCollection($log_collection = new Collection([], 'increment'), int $increment = 0): CollectionInterface
     {
         foreach ($this->enabled_gameservers as &$gameserver) {
             if (! @file_exists($file_path = $gameserver->basedir . self::bans) || ! $file_contents = @file_get_contents($file_path)) {
@@ -1525,7 +1565,7 @@ class Civ13
         return $log_collection;
     }
 
-    public function playerlogsToCollection(&$log_collection = new Collection([], 'increment'), int &$increment = 0): Collection
+    public function playerlogsToCollection(&$log_collection = new Collection([], 'increment'), int &$increment = 0): CollectionInterface
     {
         foreach ($this->enabled_gameservers as &$gameserver) {
             if (! @file_exists($file_path = $gameserver->basedir . self::playerlogs) || ! $file_contents = @file_get_contents($file_path)) {

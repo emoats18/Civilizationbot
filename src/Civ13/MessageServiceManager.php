@@ -10,6 +10,7 @@ namespace Civ13;
 use Byond\Byond;
 use Civ13\Exceptions\FileNotFoundException;
 use Civ13\Exceptions\MissingSystemPermissionException;
+use Discord\Helpers\Collection;
 use Discord\Discord;
 use Discord\Builders\Components\ActionRow;
 use Discord\Builders\Components\Button;
@@ -21,6 +22,7 @@ use Discord\Parts\User\Member;
 use Monolog\Logger;
 use React\Promise\PromiseInterface;
 
+use function React\Promise\all;
 use function React\Async\await;
 use function React\Promise\resolve;
 use function React\Promise\reject;
@@ -101,8 +103,7 @@ class MessageServiceManager
                     }),
                 ['Owner', 'Chief Technical Officer'])
             ->offsetSet('ping',
-                fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
-                    $this->civ13->reply($message, 'Pong!'))
+                static fn(Message $message, string $command, array $message_filtered): PromiseInterface => $message->reply('Pong!'))
             ->offsetSets(['help', 'commands'],
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                     $this->civ13->reply($message, $this->messageHandler->generateHelp($message->member->roles), 'help.txt', true))
@@ -502,17 +503,21 @@ class MessageServiceManager
                 ['Admin'])
             ->offsetSet('adminlist',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
-                    $message->reply(array_reduce($this->civ13->enabled_gameservers, function ($builder, $gameserver) {
-                        if (file_exists($path = $gameserver->basedir . Civ13::admins)) $builder->addFile($path, $gameserver->key . '_adminlist.txt');
-                        return $builder;
-                    }, MessageBuilder::new()->setContent('Admin Lists'))),
+                    $message->reply(
+                        array_reduce($this->civ13->enabled_gameservers, static fn($builder, $gameserver) =>
+                            file_exists($path = $gameserver->basedir . Civ13::admins)
+                                ? $builder->addFile($path, $gameserver->key . '_adminlist.txt')
+                                : $builder,
+                            MessageBuilder::new()->setContent('Admin Lists'))),
                 ['Admin'])
             ->offsetSet('factionlist',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
-                    $message->reply(array_reduce($this->civ13->enabled_gameservers, function ($builder, $gameserver) {
-                        if (file_exists($path = $gameserver->basedir . Civ13::factionlist)) $builder->addfile($path, $gameserver->key . '_factionlist.txt');
-                        return $builder;
-                    }, MessageBuilder::new()->setContent('Faction Lists'))),
+                    $message->reply(
+                        array_reduce($this->civ13->enabled_gameservers, static fn($builder, $gameserver) =>
+                            file_exists($path = $gameserver->basedir . Civ13::factionlist)
+                                ? $builder->addfile($path, $gameserver->key . '_factionlist.txt')
+                                : $builder,
+                        MessageBuilder::new()->setContent('Faction Lists'))),
                 ['Admin'])
             ->offsetSet('getrounds',
                 function (Message $message, string $command, array $message_filtered): PromiseInterface
@@ -580,7 +585,7 @@ class MessageServiceManager
                     ),
                 ['Admin'])
             ->offsetSet('listpolls',
-                fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
+                static fn(Message $message, string $command, array $message_filtered): PromiseInterface =>
                     $message->reply(MessageBuilder::new()->setContent("Available polls: `" . implode('`, `', Polls::listPolls()) . "`")),
                 ['Admin'])
             ->offsetSet('fullbancheck',
@@ -683,7 +688,7 @@ class MessageServiceManager
                         return $carry;
                     }, []))
                         ? $this->civ13->reply($message, "Rounds: " . json_encode($rounds))
-                        :  $this->civ13->reply($message, 'No data found.'),
+                        : $this->civ13->reply($message, 'No data found.'),
                 ['Ambassador'])
             ->offsetSet('playerlist',
                 fn(Message $message, string $command, array $message_filtered): PromiseInterface => // This function is only authorized to be used by the database administrator
@@ -718,15 +723,11 @@ class MessageServiceManager
                         $member->roles->has($this->civ13->role_ids['veteran']) &&
                         ! $member->roles->has($this->civ13->role_ids['Verified'])
                     )) return $message->react("👎");
-                    
-                    $message->react("⏱️");
-                    if (! $members_array = $members->toArray()) return $message->react("❌"); // No members to process
-                    $promise = array_shift($members_array)->addRole($this->civ13->role_ids['Verified']);
-                    if (! $members_array) return $promise->then(static fn() => $message->react("👍")); // There was only one member to process
-                    $promise = array_reduce($members_array, fn(PromiseInterface $carry_promise, Member $member) =>
-                        $carry_promise->then(fn() => $member->addRole($this->civ13->role_ids['Verified'])),
-                    $promise);
-                    return $promise->then(static fn() => $message->react("👍"));
+                    return $message->react("⏱️")
+                        ->then(static fn() => $members->reduce(fn(PromiseInterface $carry_promise, Member $member): PromiseInterface =>
+                            $carry_promise->then(fn() => $member->addRole($this->civ13->role_ids['Verified'])),
+                            $members->shift()->addRole($this->civ13->role_ids['Verified'])))
+                        ->then(static fn() => $message->react("👍"));
                 }, ['Chief Technical Officer'])
             ->offsetSet('retryregister',
                 function (Message $message, string $command, array $message_filtered): PromiseInterface { // This function is only authorized to be used by the database administrator
@@ -739,6 +740,18 @@ class MessageServiceManager
                             ? "Successfully verified $ckey to <@{$discord_id}>"
                             : "Failed to verify $ckey to <@{$discord_id}>";
                     }, $arr))) ? $this->civ13->reply($message, $msg) : $this->civ13->reply($message, 'Unable to register provisional users.');
+
+                    if (! $this->civ13->verifier->provisional) return $this->civ13->reply($message, 'No users are pending verification.');
+                    return ($msg = implode(PHP_EOL, $this->civ13->verifier->provisional
+                        ->map(function ($item) {
+                            $ckey = $item['ss13'] ?? 'Unknown';
+                            $discord_id = $item['discord'] ?? 'Unknown';
+                            return $this->civ13->verifier->provisionalRegistration($ckey, $discord_id)
+                                ? "Successfully verified $ckey to <@{$discord_id}>"
+                                : "Failed to verify $ckey to <@{$discord_id}>";
+                        }, $arr)))
+                            ? $this->civ13->reply($message, $msg)
+                            : $this->civ13->reply($message, 'Unable to register provisional users.');
                 },
                 ['Chief Technical Officer'])
             ->offsetSet('listprovisional',

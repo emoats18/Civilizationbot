@@ -13,6 +13,7 @@ use Civ13\Exceptions\VerifierException;
 use Discord\Discord;
 use Discord\Builders\MessageBuilder;
 use Discord\Helpers\Collection;
+use Discord\Helpers\CollectionInterface;
 use Discord\Parts\Channel\Message;
 use Discord\Parts\Thread\Thread;
 use Discord\Parts\User\Member;
@@ -682,9 +683,9 @@ class Verifier
      *
      * @param bool $reload Whether to force a reload of the data from the cached data (JSON file) if the API endpoint is unreachable.
      *
-     * @return Collection The verified users as a Collection.
+     * @return CollectionInterface The verified users as a Collection.
      */
-    public function getVerified(bool $initialize = true): Collection
+    public function getVerified(bool $initialize = true): CollectionInterface
     {
         $this->logger->debug('Refreshing verified list...');
         ['json' => $json, 'http_status' => $http_status] = $this->fetchVerifiedData();
@@ -766,7 +767,7 @@ class Verifier
      *
      * @return Collection The collection of verified member items.
      */
-    public function getVerifiedMemberItems(): Collection
+    public function getVerifiedMemberItems(): CollectionInterface
     {
         if ($guild = $this->civ13->discord->guilds->get('id', $this->civ13->civ13_guild_id)) return $this->verified->filter(function($v) use ($guild) { return $guild->members->has($v['discord']); });
         return $this->verified;
