@@ -472,7 +472,8 @@ class GameServer
         if (! $round = $this->getRound($this->current_round)) return null;
         $round_embed_builder = function () use ($round): MessageBuilder
         {
-            if (file_exists($this->serverdata) && $data = @file_get_contents($this->serverdata)) $data = self::explodeServerdata($data);
+            if (! file_exists($this->serverdata) || ! $data = @file_get_contents($this->serverdata)) return null;
+            $data = self::explodeServerdata($data);
             $embed = $this->civ13->createEmbed()
                     ->setTitle($this->name)
                     //->addFieldValues('Game ID', $game_id);
