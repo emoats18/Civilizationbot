@@ -136,8 +136,8 @@ $options = array(
     // The Verify URL is where verification requests are sent to and where the verification list is retrieved from
     // The website must return valid json when no parameters are passed to it and MUST allow POST requests including 'token', 'ckey', and 'discord'
     // Reach out to Your Momma if you need help setting up your website
-    'webserver_url' => '',
-    'verify_url' => '', // Leave this blank if you do not want to use the webserver, ckeys will be stored locally as provisional
+    'webserver_url' => 'localhost',
+    'verify_url' => 'http://localhost:8010/verified', // Leave this blank if you do not want to use the webserver, ckeys will be stored locally as provisional
     // 'serverinfo_url' => '', // URL of the serverinfo.json file, defaults to the webserver if left blank
     'ooc_badwords' => $ooc_badwords,
     'ic_badwords' => $ic_badwords,
